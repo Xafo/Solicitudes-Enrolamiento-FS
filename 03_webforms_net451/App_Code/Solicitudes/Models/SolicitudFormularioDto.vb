@@ -29,13 +29,9 @@ Public Class SolicitudFormularioDto
 
     Public Property TotalBeneficiariosVida As Decimal
     Public Property TotalBeneficiariosContingencia As Decimal
-
-    Public Property DependienteNombre1 As String
-    Public Property DependienteNombre2 As String
-    Public Property DependienteNombre3 As String
-    Public Property DependienteGenero1 As String
-    Public Property DependienteGenero2 As String
-    Public Property DependienteGenero3 As String
+    Public Property BeneficiariosVidaJson As String
+    Public Property BeneficiariosContingenciaJson As String
+    Public Property DependientesJson As String
 
     Public Property SaludCorta1 As String
     Public Property SaludCorta2 As String

@@ -49,6 +49,7 @@ body {
     font-weight: 600;
     color: #5b667d;
     background: #fff;
+    cursor: pointer;
 }
 
 .stepper li.active {
@@ -64,6 +65,10 @@ body {
     padding: 18px;
     margin-bottom: 14px;
     background: #fff;
+}
+
+.is-hidden {
+    display: none !important;
 }
 
 .wizard-step.active {
@@ -138,6 +143,11 @@ body {
     cursor: pointer;
 }
 
+.btn.small {
+    padding: 6px 10px;
+    font-size: 12px;
+}
+
 .btn.primary {
     color: #fff;
     background: var(--ficohsa-blue);
@@ -181,6 +191,10 @@ body {
 .card h3 {
     margin: 0 0 10px;
     color: var(--ficohsa-blue);
+}
+
+.row-actions {
+    margin-top: 10px;
 }
 
 .table-grid {

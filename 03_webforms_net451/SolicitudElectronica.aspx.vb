@@ -19,18 +19,6 @@ Partial Class SolicitudElectronica
     Private Sub CargarCatalogosBase()
         CargarLista(ddlTipoFormulario, _catalogos.ObtenerTiposFormulario())
         CargarLista(ddlTipoDocumento, _catalogos.ObtenerTiposDocumento())
-        CargarLista(ddlVidaParentesco1, _catalogos.ObtenerParentescos())
-        CargarLista(ddlVidaParentesco2, _catalogos.ObtenerParentescos())
-        CargarLista(ddlVidaParentesco3, _catalogos.ObtenerParentescos())
-        CargarLista(ddlContParentesco1, _catalogos.ObtenerParentescos())
-        CargarLista(ddlContParentesco2, _catalogos.ObtenerParentescos())
-        CargarLista(ddlContParentesco3, _catalogos.ObtenerParentescos())
-        CargarLista(ddlDepParentesco1, _catalogos.ObtenerParentescos())
-        CargarLista(ddlDepParentesco2, _catalogos.ObtenerParentescos())
-        CargarLista(ddlDepParentesco3, _catalogos.ObtenerParentescos())
-        CargarLista(ddlDepGenero1, _catalogos.ObtenerGeneros())
-        CargarLista(ddlDepGenero2, _catalogos.ObtenerGeneros())
-        CargarLista(ddlDepGenero3, _catalogos.ObtenerGeneros())
         CargarLista(ddlSaludCorta1, _catalogos.ObtenerSiNo())
         CargarLista(ddlSaludCorta2, _catalogos.ObtenerSiNo())
         CargarLista(ddlSaludCorta3, _catalogos.ObtenerSiNo())
@@ -56,6 +44,12 @@ Partial Class SolicitudElectronica
 
     Protected Sub btnGuardar_Click(sender As Object, e As EventArgs) Handles btnGuardar.Click
         Dim dto = ConstruirSolicitud()
+        Dim errores = _validacion.Validar(dto)
+
+        If errores.Count > 0 Then
+            MostrarPrimerError(errores)
+            Return
+        End If
 
         If Not _repositorio.GuardarBorrador(dto) Then
             lblMensaje.Text = "No fue posible guardar el borrador."
@@ -69,13 +63,10 @@ Partial Class SolicitudElectronica
 
     Protected Sub btnEnviar_Click(sender As Object, e As EventArgs) Handles btnEnviar.Click
         Dim dto = ConstruirSolicitud()
-        Dim errores As List(Of String) = _validacion.ValidarSprint1(dto)
-        errores.AddRange(_validacion.ValidarSprint2(dto))
-        errores.AddRange(_validacion.ValidarSprint3(dto))
+        Dim errores = _validacion.Validar(dto)
 
         If errores.Count > 0 Then
-            lblMensaje.Text = String.Join(" ", errores.ToArray())
-            lblMensaje.CssClass = "message error"
+            MostrarPrimerError(errores)
             Return
         End If
 
@@ -120,15 +111,11 @@ Partial Class SolicitudElectronica
         dto.Celular = txtCelular.Text.Trim()
         dto.Email = txtEmail.Text.Trim()
 
-        dto.TotalBeneficiariosVida = ParseDecimal(txtVidaPct1.Text) + ParseDecimal(txtVidaPct2.Text) + ParseDecimal(txtVidaPct3.Text)
-        dto.TotalBeneficiariosContingencia = ParseDecimal(txtContPct1.Text) + ParseDecimal(txtContPct2.Text) + ParseDecimal(txtContPct3.Text)
-
-        dto.DependienteGenero1 = ddlDepGenero1.SelectedValue
-        dto.DependienteGenero2 = ddlDepGenero2.SelectedValue
-        dto.DependienteGenero3 = ddlDepGenero3.SelectedValue
-        dto.DependienteNombre1 = txtDepNombre1.Text.Trim()
-        dto.DependienteNombre2 = txtDepNombre2.Text.Trim()
-        dto.DependienteNombre3 = txtDepNombre3.Text.Trim()
+        dto.TotalBeneficiariosVida = ParseDecimal(hfTotalVida.Value)
+        dto.TotalBeneficiariosContingencia = ParseDecimal(hfTotalCont.Value)
+        dto.BeneficiariosVidaJson = hfVidaJson.Value
+        dto.BeneficiariosContingenciaJson = hfContJson.Value
+        dto.DependientesJson = hfDepJson.Value
 
         dto.SaludCorta1 = ddlSaludCorta1.SelectedValue
         dto.SaludCorta2 = ddlSaludCorta2.SelectedValue
@@ -155,7 +142,20 @@ Partial Class SolicitudElectronica
         Return dto
     End Function
 
+    Private Sub MostrarPrimerError(errores As List(Of ValidationError))
+        Dim first = errores(0)
+        lblMensaje.Text = first.Message
+        lblMensaje.CssClass = "message error"
+
+        Dim script = String.Format("goToStepAndFocus({0}, '{1}');", first.Step, first.FieldId)
+        ScriptManager.RegisterStartupScript(Me, Me.GetType(), "focus-error", script, True)
+    End Sub
+
     Private Function ParseDecimal(raw As String) As Decimal
+        If String.IsNullOrWhiteSpace(raw) Then
+            Return 0D
+        End If
+
         Dim value As Decimal
         Dim normalized = raw.Replace(",", ".")
 

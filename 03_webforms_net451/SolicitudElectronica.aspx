@@ -20,12 +20,12 @@
             </header>
 
             <ul class="stepper" id="wizardStepper">
-                <li class="active" data-step="1">Encabezado</li>
-                <li data-step="2">Asegurado</li>
-                <li data-step="3">Direccion</li>
-                <li data-step="4">Beneficiarios</li>
-                <li data-step="5">Salud</li>
-                <li data-step="6">Consentimiento</li>
+                <li class="active step-tab" data-step="1" tabindex="0">Encabezado</li>
+                <li class="step-tab" data-step="2" tabindex="0">Asegurado</li>
+                <li class="step-tab" data-step="3" tabindex="0">Direccion</li>
+                <li class="step-tab" data-step="4" tabindex="0">Beneficiarios</li>
+                <li class="step-tab" data-step="5" tabindex="0">Salud</li>
+                <li class="step-tab" data-step="6" tabindex="0">Consentimiento</li>
             </ul>
 
             <asp:Label ID="lblMensaje" runat="server" CssClass="message" EnableViewState="false" />
@@ -163,29 +163,14 @@
                                 <th>Parentesco</th>
                                 <th>Fecha nacimiento</th>
                                 <th>Porcentaje*</th>
+                                <th></th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <tr>
-                                <td><asp:TextBox ID="txtVidaNombre1" runat="server" CssClass="input" /></td>
-                                <td><asp:DropDownList ID="ddlVidaParentesco1" runat="server" CssClass="input" /></td>
-                                <td><asp:TextBox ID="txtVidaFecha1" runat="server" CssClass="input" /></td>
-                                <td><asp:TextBox ID="txtVidaPct1" runat="server" CssClass="input pct-vida" /></td>
-                            </tr>
-                            <tr>
-                                <td><asp:TextBox ID="txtVidaNombre2" runat="server" CssClass="input" /></td>
-                                <td><asp:DropDownList ID="ddlVidaParentesco2" runat="server" CssClass="input" /></td>
-                                <td><asp:TextBox ID="txtVidaFecha2" runat="server" CssClass="input" /></td>
-                                <td><asp:TextBox ID="txtVidaPct2" runat="server" CssClass="input pct-vida" /></td>
-                            </tr>
-                            <tr>
-                                <td><asp:TextBox ID="txtVidaNombre3" runat="server" CssClass="input" /></td>
-                                <td><asp:DropDownList ID="ddlVidaParentesco3" runat="server" CssClass="input" /></td>
-                                <td><asp:TextBox ID="txtVidaFecha3" runat="server" CssClass="input" /></td>
-                                <td><asp:TextBox ID="txtVidaPct3" runat="server" CssClass="input pct-vida" /></td>
-                            </tr>
-                        </tbody>
+                        <tbody id="bodyVida"></tbody>
                     </table>
+                    <div class="row-actions">
+                        <button type="button" id="btnAddVida" class="btn light small">Agregar beneficiario vida</button>
+                    </div>
                     <p class="total">Total Vida: <span id="totalVida">0</span>% <span class="help" title="La suma de porcentajes debe ser exactamente 100%.">?</span></p>
                 </div>
 
@@ -198,29 +183,14 @@
                                 <th>Parentesco</th>
                                 <th>Fecha nacimiento</th>
                                 <th>Porcentaje*</th>
+                                <th></th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <tr>
-                                <td><asp:TextBox ID="txtContNombre1" runat="server" CssClass="input" /></td>
-                                <td><asp:DropDownList ID="ddlContParentesco1" runat="server" CssClass="input" /></td>
-                                <td><asp:TextBox ID="txtContFecha1" runat="server" CssClass="input" /></td>
-                                <td><asp:TextBox ID="txtContPct1" runat="server" CssClass="input pct-cont" /></td>
-                            </tr>
-                            <tr>
-                                <td><asp:TextBox ID="txtContNombre2" runat="server" CssClass="input" /></td>
-                                <td><asp:DropDownList ID="ddlContParentesco2" runat="server" CssClass="input" /></td>
-                                <td><asp:TextBox ID="txtContFecha2" runat="server" CssClass="input" /></td>
-                                <td><asp:TextBox ID="txtContPct2" runat="server" CssClass="input pct-cont" /></td>
-                            </tr>
-                            <tr>
-                                <td><asp:TextBox ID="txtContNombre3" runat="server" CssClass="input" /></td>
-                                <td><asp:DropDownList ID="ddlContParentesco3" runat="server" CssClass="input" /></td>
-                                <td><asp:TextBox ID="txtContFecha3" runat="server" CssClass="input" /></td>
-                                <td><asp:TextBox ID="txtContPct3" runat="server" CssClass="input pct-cont" /></td>
-                            </tr>
-                        </tbody>
+                        <tbody id="bodyCont"></tbody>
                     </table>
+                    <div class="row-actions">
+                        <button type="button" id="btnAddCont" class="btn light small">Agregar beneficiario contingencia</button>
+                    </div>
                     <p class="total">Total Contingencia: <span id="totalCont">0</span>% <span class="help" title="La suma de porcentajes debe ser exactamente 100%.">?</span></p>
                 </div>
 
@@ -235,35 +205,14 @@
                                 <th>Fecha nacimiento</th>
                                 <th>Peso (Lbs)</th>
                                 <th>Estatura (m)</th>
+                                <th></th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <tr>
-                                <td><asp:TextBox ID="txtDepNombre1" runat="server" CssClass="input" /></td>
-                                <td><asp:DropDownList ID="ddlDepParentesco1" runat="server" CssClass="input" /></td>
-                                <td><asp:DropDownList ID="ddlDepGenero1" runat="server" CssClass="input" /></td>
-                                <td><asp:TextBox ID="txtDepFecha1" runat="server" CssClass="input" /></td>
-                                <td><asp:TextBox ID="txtDepPeso1" runat="server" CssClass="input" /></td>
-                                <td><asp:TextBox ID="txtDepEstatura1" runat="server" CssClass="input" /></td>
-                            </tr>
-                            <tr>
-                                <td><asp:TextBox ID="txtDepNombre2" runat="server" CssClass="input" /></td>
-                                <td><asp:DropDownList ID="ddlDepParentesco2" runat="server" CssClass="input" /></td>
-                                <td><asp:DropDownList ID="ddlDepGenero2" runat="server" CssClass="input" /></td>
-                                <td><asp:TextBox ID="txtDepFecha2" runat="server" CssClass="input" /></td>
-                                <td><asp:TextBox ID="txtDepPeso2" runat="server" CssClass="input" /></td>
-                                <td><asp:TextBox ID="txtDepEstatura2" runat="server" CssClass="input" /></td>
-                            </tr>
-                            <tr>
-                                <td><asp:TextBox ID="txtDepNombre3" runat="server" CssClass="input" /></td>
-                                <td><asp:DropDownList ID="ddlDepParentesco3" runat="server" CssClass="input" /></td>
-                                <td><asp:DropDownList ID="ddlDepGenero3" runat="server" CssClass="input" /></td>
-                                <td><asp:TextBox ID="txtDepFecha3" runat="server" CssClass="input" /></td>
-                                <td><asp:TextBox ID="txtDepPeso3" runat="server" CssClass="input" /></td>
-                                <td><asp:TextBox ID="txtDepEstatura3" runat="server" CssClass="input" /></td>
-                            </tr>
-                        </tbody>
+                        <tbody id="bodyDep"></tbody>
                     </table>
+                    <div class="row-actions">
+                        <button type="button" id="btnAddDep" class="btn light small">Agregar dependiente</button>
+                    </div>
                 </div>
             </section>
 
@@ -335,6 +284,12 @@
                 <asp:Button ID="btnGuardar" runat="server" CssClass="btn light" Text="Guardar borrador" />
                 <asp:Button ID="btnEnviar" runat="server" CssClass="btn primary" Text="Enviar" />
             </section>
+
+            <asp:HiddenField ID="hfVidaJson" runat="server" />
+            <asp:HiddenField ID="hfContJson" runat="server" />
+            <asp:HiddenField ID="hfDepJson" runat="server" />
+            <asp:HiddenField ID="hfTotalVida" runat="server" />
+            <asp:HiddenField ID="hfTotalCont" runat="server" />
         </main>
     </form>
 </body>
