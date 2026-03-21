@@ -16,7 +16,7 @@
         <main class="container">
             <header class="header">
                 <h1>Solicitud electronica</h1>
-                <p>Canal digital - Sprint 2</p>
+                <p>Canal digital - validaciones finales</p>
             </header>
 
             <ul class="stepper" id="wizardStepper">
@@ -29,6 +29,7 @@
             </ul>
 
             <asp:Label ID="lblMensaje" runat="server" CssClass="message" EnableViewState="false" />
+            <asp:BulletedList ID="bltErrores" runat="server" CssClass="error-list" Visible="false" />
 
             <section class="wizard-step active" data-step="1">
                 <h2>Datos de encabezado</h2>
@@ -95,11 +96,11 @@
                     </div>
                     <div class="field">
                         <label for="txtEstaturaMetros">Estatura en metros <span class="required">*</span></label>
-                        <asp:TextBox ID="txtEstaturaMetros" runat="server" CssClass="input" MaxLength="10" />
+                        <asp:TextBox ID="txtEstaturaMetros" runat="server" CssClass="input decimal" MaxLength="10" />
                     </div>
                     <div class="field">
                         <label for="txtPesoLibras">Peso en libras <span class="required">*</span></label>
-                        <asp:TextBox ID="txtPesoLibras" runat="server" CssClass="input" MaxLength="10" />
+                        <asp:TextBox ID="txtPesoLibras" runat="server" CssClass="input decimal" MaxLength="10" />
                     </div>
                     <div class="field">
                         <label for="txtCargoDesempena">Cargo que desempena <span class="required">*</span></label>
@@ -107,7 +108,7 @@
                     </div>
                     <div class="field">
                         <label for="txtSueldoMensual">Sueldo mensual <span class="required">*</span></label>
-                        <asp:TextBox ID="txtSueldoMensual" runat="server" CssClass="input" MaxLength="18" />
+                        <asp:TextBox ID="txtSueldoMensual" runat="server" CssClass="input decimal" MaxLength="18" />
                     </div>
                 </div>
             </section>
@@ -226,7 +227,7 @@
                         <div class="field"><label>2. Ha sido sometido a intervencion quirurgica?</label><asp:DropDownList ID="ddlSaludCorta2" runat="server" CssClass="input" /></div>
                         <div class="field"><label>3. Su capacidad de trabajo ha sido reducida?</label><asp:DropDownList ID="ddlSaludCorta3" runat="server" CssClass="input" /></div>
                         <div class="field"><label>4. Usa drogas de prescripcion medica?</label><asp:DropDownList ID="ddlSaludCorta4" runat="server" CssClass="input" /></div>
-                        <div class="field"><label>Detalle respuestas afirmativas</label><asp:TextBox ID="txtSaludCortaDetalle" runat="server" CssClass="input" TextMode="MultiLine" Rows="3" /></div>
+                         <div class="field"><label>Detalle respuestas afirmativas</label><asp:TextBox ID="txtSaludCortaDetalle" runat="server" CssClass="input" TextMode="MultiLine" Rows="3" MaxLength="1200" /></div>
                     </div>
                 </div>
 
@@ -238,9 +239,9 @@
                         <div class="field"><label>3. Tratamiento por otro medico</label><asp:DropDownList ID="ddlSaludLarga3" runat="server" CssClass="input" /></div>
                         <div class="field"><label>4. Preguntas de salud femenina</label><asp:DropDownList ID="ddlSaludLarga4" runat="server" CssClass="input" /></div>
                         <div class="field"><label>5. Antecedentes Covid-19</label><asp:DropDownList ID="ddlSaludLarga5" runat="server" CssClass="input" /></div>
-                        <div class="field"><label>Detalle respuestas afirmativas <span class="help" title="Si responde Si en salud, debe completar detalle.">?</span></label><asp:TextBox ID="txtSaludLargaDetalle" runat="server" CssClass="input" TextMode="MultiLine" Rows="4" /></div>
+                        <div class="field"><label>Detalle respuestas afirmativas <span class="help" title="Si responde Si en salud, debe completar detalle.">?</span></label><asp:TextBox ID="txtSaludLargaDetalle" runat="server" CssClass="input" TextMode="MultiLine" Rows="4" MaxLength="1800" /></div>
                         <div class="field"><label>Esta tomando medicamentos en la actualidad?</label><asp:DropDownList ID="ddlMedicamentos" runat="server" CssClass="input" /></div>
-                        <div class="field"><label>Detalle de medicamentos <span class="help" title="Si indica que toma medicamentos, debe agregar detalle.">?</span></label><asp:TextBox ID="txtMedicamentosDetalle" runat="server" CssClass="input" TextMode="MultiLine" Rows="3" /></div>
+                        <div class="field"><label>Detalle de medicamentos <span class="help" title="Si indica que toma medicamentos, debe agregar detalle.">?</span></label><asp:TextBox ID="txtMedicamentosDetalle" runat="server" CssClass="input" TextMode="MultiLine" Rows="3" MaxLength="1200" /></div>
                     </div>
                 </div>
             </section>
@@ -265,7 +266,7 @@
                         </div>
                         <div class="field">
                             <label for="txtFechaFirma">Fecha de firma <span class="required">*</span></label>
-                            <asp:TextBox ID="txtFechaFirma" runat="server" CssClass="input" MaxLength="10" placeholder="dd/mm/aaaa" />
+                            <asp:TextBox ID="txtFechaFirma" runat="server" CssClass="input no-manual-date" TextMode="Date" />
                         </div>
                         <div class="field">
                             <label for="txtObservacionesFinales">Observaciones</label>
@@ -281,7 +282,6 @@
             </section>
 
             <section class="actions">
-                <asp:Button ID="btnGuardar" runat="server" CssClass="btn light" Text="Guardar borrador" />
                 <asp:Button ID="btnEnviar" runat="server" CssClass="btn primary" Text="Enviar" />
             </section>
 

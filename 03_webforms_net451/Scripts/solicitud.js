@@ -65,7 +65,6 @@ function initSolicitudElectronica() {
         if (currentPos < 0 || currentPos === visible.length - 1) {
             return fromStep;
         }
-
         return visible[currentPos + 1];
     }
 
@@ -75,7 +74,6 @@ function initSolicitudElectronica() {
         if (currentPos <= 0) {
             return fromStep;
         }
-
         return visible[currentPos - 1];
     }
 
@@ -99,34 +97,46 @@ function initSolicitudElectronica() {
 
     function createVidaRow(data) {
         return '<tr class="row-vida">' +
-            '<td><input class="input vida-nombre" type="text" value="' + (data.nombre || "") + '" /></td>' +
+            '<td><input class="input vida-nombre" type="text" maxlength="120" value="' + (data.nombre || "") + '" /></td>' +
             '<td><select class="input vida-parentesco">' + createOptions(parentescos, data.parentesco || "") + '</select></td>' +
-            '<td><input class="input vida-fecha" type="text" value="' + (data.fecha || "") + '" /></td>' +
-            '<td><input class="input pct-vida" type="text" value="' + (data.porcentaje || "") + '" /></td>' +
+            '<td><input class="input vida-fecha no-manual-date" type="date" value="' + (data.fecha || "") + '" /></td>' +
+            '<td><input class="input pct-vida decimal" type="text" inputmode="decimal" value="' + (data.porcentaje || "") + '" /></td>' +
             '<td><button type="button" class="btn light small remove-row">Quitar</button></td>' +
             '</tr>';
     }
 
     function createContRow(data) {
         return '<tr class="row-cont">' +
-            '<td><input class="input cont-nombre" type="text" value="' + (data.nombre || "") + '" /></td>' +
+            '<td><input class="input cont-nombre" type="text" maxlength="120" value="' + (data.nombre || "") + '" /></td>' +
             '<td><select class="input cont-parentesco">' + createOptions(parentescos, data.parentesco || "") + '</select></td>' +
-            '<td><input class="input cont-fecha" type="text" value="' + (data.fecha || "") + '" /></td>' +
-            '<td><input class="input pct-cont" type="text" value="' + (data.porcentaje || "") + '" /></td>' +
+            '<td><input class="input cont-fecha no-manual-date" type="date" value="' + (data.fecha || "") + '" /></td>' +
+            '<td><input class="input pct-cont decimal" type="text" inputmode="decimal" value="' + (data.porcentaje || "") + '" /></td>' +
             '<td><button type="button" class="btn light small remove-row">Quitar</button></td>' +
             '</tr>';
     }
 
     function createDepRow(data) {
         return '<tr class="row-dep">' +
-            '<td><input class="input dep-nombre" type="text" value="' + (data.nombre || "") + '" /></td>' +
+            '<td><input class="input dep-nombre" type="text" maxlength="120" value="' + (data.nombre || "") + '" /></td>' +
             '<td><select class="input dep-parentesco">' + createOptions(parentescos, data.parentesco || "") + '</select></td>' +
             '<td><select class="input dep-genero">' + createOptions(generos, data.genero || "") + '</select></td>' +
-            '<td><input class="input dep-fecha" type="text" value="' + (data.fecha || "") + '" /></td>' +
-            '<td><input class="input dep-peso" type="text" value="' + (data.peso || "") + '" /></td>' +
-            '<td><input class="input dep-estatura" type="text" value="' + (data.estatura || "") + '" /></td>' +
+            '<td><input class="input dep-fecha no-manual-date" type="date" value="' + (data.fecha || "") + '" /></td>' +
+            '<td><input class="input dep-peso decimal" type="text" inputmode="decimal" value="' + (data.peso || "") + '" /></td>' +
+            '<td><input class="input dep-estatura decimal" type="text" inputmode="decimal" value="' + (data.estatura || "") + '" /></td>' +
             '<td><button type="button" class="btn light small remove-row">Quitar</button></td>' +
             '</tr>';
+    }
+
+    function normalizeDecimal(raw) {
+        if (!raw) {
+            return "";
+        }
+        var cleaned = raw.toString().replace(/,/g, ".").replace(/[^0-9.\-]/g, "");
+        var parsed = Number(cleaned);
+        if (Number.isNaN(parsed)) {
+            return "";
+        }
+        return parsed.toFixed(2);
     }
 
     function sumByClass(className) {
@@ -161,13 +171,50 @@ function initSolicitudElectronica() {
         });
     }
 
+    function isFormWithDependientes(tipo) {
+        return tipo === "101" || tipo === "63" || tipo === "64";
+    }
+
+    function clearControl(suffix) {
+        var control = bySuffix(suffix);
+        if (!control) {
+            return;
+        }
+        if (control.tagName === "SELECT") {
+            control.value = "";
+        } else if (control.type === "checkbox") {
+            control.checked = false;
+        } else {
+            control.value = "";
+        }
+    }
+
+    function clearHiddenSections(tipo) {
+        if (tipo === "101") {
+            ["ddlSaludCorta1", "ddlSaludCorta2", "ddlSaludCorta3", "ddlSaludCorta4", "txtSaludCortaDetalle",
+             "ddlSaludLarga1", "ddlSaludLarga2", "ddlSaludLarga3", "ddlSaludLarga4", "ddlSaludLarga5", "txtSaludLargaDetalle",
+             "ddlMedicamentos", "txtMedicamentosDetalle"].forEach(clearControl);
+        }
+
+        if (tipo === "61" || tipo === "62") {
+            ["ddlSaludLarga1", "ddlSaludLarga2", "ddlSaludLarga3", "ddlSaludLarga4", "ddlSaludLarga5", "txtSaludLargaDetalle",
+             "ddlMedicamentos", "txtMedicamentosDetalle"].forEach(clearControl);
+            if (hfDepJson) hfDepJson.value = "[]";
+        }
+
+        if (!isFormWithDependientes(tipo) && hfDepJson) {
+            hfDepJson.value = "[]";
+        }
+    }
+
     function serializeDynamicData() {
+        var tipo = ddlFormulario ? ddlFormulario.value : "";
         var vida = readRows("#bodyVida tr", function (row) {
             return {
                 nombre: row.querySelector(".vida-nombre").value.trim(),
                 parentesco: row.querySelector(".vida-parentesco").value,
                 fecha: row.querySelector(".vida-fecha").value.trim(),
-                porcentaje: row.querySelector(".pct-vida").value.trim()
+                porcentaje: normalizeDecimal(row.querySelector(".pct-vida").value.trim())
             };
         });
 
@@ -176,24 +223,28 @@ function initSolicitudElectronica() {
                 nombre: row.querySelector(".cont-nombre").value.trim(),
                 parentesco: row.querySelector(".cont-parentesco").value,
                 fecha: row.querySelector(".cont-fecha").value.trim(),
-                porcentaje: row.querySelector(".pct-cont").value.trim()
+                porcentaje: normalizeDecimal(row.querySelector(".pct-cont").value.trim())
             };
         });
 
-        var dep = readRows("#bodyDep tr", function (row) {
-            return {
-                nombre: row.querySelector(".dep-nombre").value.trim(),
-                parentesco: row.querySelector(".dep-parentesco").value,
-                genero: row.querySelector(".dep-genero").value,
-                fecha: row.querySelector(".dep-fecha").value.trim(),
-                peso: row.querySelector(".dep-peso").value.trim(),
-                estatura: row.querySelector(".dep-estatura").value.trim()
-            };
-        });
+        var dep = [];
+        if (isFormWithDependientes(tipo)) {
+            dep = readRows("#bodyDep tr", function (row) {
+                return {
+                    nombre: row.querySelector(".dep-nombre").value.trim(),
+                    parentesco: row.querySelector(".dep-parentesco").value,
+                    genero: row.querySelector(".dep-genero").value,
+                    fecha: row.querySelector(".dep-fecha").value.trim(),
+                    peso: normalizeDecimal(row.querySelector(".dep-peso").value.trim()),
+                    estatura: normalizeDecimal(row.querySelector(".dep-estatura").value.trim())
+                };
+            });
+        }
 
         if (hfVidaJson) hfVidaJson.value = JSON.stringify(vida);
         if (hfContJson) hfContJson.value = JSON.stringify(cont);
         if (hfDepJson) hfDepJson.value = JSON.stringify(dep);
+        clearHiddenSections(tipo);
         paintTotals();
     }
 
@@ -206,47 +257,29 @@ function initSolicitudElectronica() {
         var savedCont = [];
         var savedDep = [];
 
-        try {
-            savedVida = JSON.parse((hfVidaJson && hfVidaJson.value) || "[]");
-        } catch (err) {
-            savedVida = [];
-        }
-
-        try {
-            savedCont = JSON.parse((hfContJson && hfContJson.value) || "[]");
-        } catch (err) {
-            savedCont = [];
-        }
-
-        try {
-            savedDep = JSON.parse((hfDepJson && hfDepJson.value) || "[]");
-        } catch (err) {
-            savedDep = [];
-        }
+        try { savedVida = JSON.parse((hfVidaJson && hfVidaJson.value) || "[]"); } catch (err) { savedVida = []; }
+        try { savedCont = JSON.parse((hfContJson && hfContJson.value) || "[]"); } catch (err) { savedCont = []; }
+        try { savedDep = JSON.parse((hfDepJson && hfDepJson.value) || "[]"); } catch (err) { savedDep = []; }
 
         if (bodyVida && bodyVida.children.length === 0) {
             if (savedVida.length > 0) {
-                savedVida.forEach(function (row) {
-                    bodyVida.insertAdjacentHTML("beforeend", createVidaRow(row));
-                });
+                savedVida.forEach(function (row) { bodyVida.insertAdjacentHTML("beforeend", createVidaRow(row)); });
             } else {
                 bodyVida.insertAdjacentHTML("beforeend", createVidaRow({}));
             }
         }
+
         if (bodyCont && bodyCont.children.length === 0) {
             if (savedCont.length > 0) {
-                savedCont.forEach(function (row) {
-                    bodyCont.insertAdjacentHTML("beforeend", createContRow(row));
-                });
+                savedCont.forEach(function (row) { bodyCont.insertAdjacentHTML("beforeend", createContRow(row)); });
             } else {
                 bodyCont.insertAdjacentHTML("beforeend", createContRow({}));
             }
         }
+
         if (bodyDep && bodyDep.children.length === 0) {
             if (savedDep.length > 0) {
-                savedDep.forEach(function (row) {
-                    bodyDep.insertAdjacentHTML("beforeend", createDepRow(row));
-                });
+                savedDep.forEach(function (row) { bodyDep.insertAdjacentHTML("beforeend", createDepRow(row)); });
             } else {
                 bodyDep.insertAdjacentHTML("beforeend", createDepRow({}));
             }
@@ -282,6 +315,37 @@ function initSolicitudElectronica() {
                 paintTotals();
             }
         });
+
+        document.addEventListener("blur", function (event) {
+            if (event.target.classList.contains("decimal")) {
+                event.target.value = normalizeDecimal(event.target.value);
+            }
+        }, true);
+    }
+
+    function lockDateTyping() {
+        document.addEventListener("keydown", function (event) {
+            if (event.target.classList.contains("no-manual-date")) {
+                event.preventDefault();
+                if (typeof event.target.showPicker === "function") {
+                    event.target.showPicker();
+                }
+            }
+        });
+
+        ["paste", "drop"].forEach(function (evt) {
+            document.addEventListener(evt, function (event) {
+                if (event.target.classList.contains("no-manual-date")) {
+                    event.preventDefault();
+                }
+            });
+        });
+
+        document.addEventListener("click", function (event) {
+            if (event.target.classList.contains("no-manual-date") && typeof event.target.showPicker === "function") {
+                event.target.showPicker();
+            }
+        });
     }
 
     function toggleByFormulario() {
@@ -293,7 +357,7 @@ function initSolicitudElectronica() {
         var showSalud = tipo !== "101";
         var showSaludCorta = tipo === "61" || tipo === "62";
         var showSaludLarga = tipo === "63" || tipo === "64";
-        var showDependientes = tipo === "101" || tipo === "63" || tipo === "64";
+        var showDependientes = isFormWithDependientes(tipo);
 
         setStepVisibility(saludStep, saludTab, showSalud);
 
@@ -309,6 +373,7 @@ function initSolicitudElectronica() {
             cardDependientes.style.display = showDependientes ? "block" : "none";
         }
 
+        clearHiddenSections(tipo);
         ensureCurrentVisible();
         render();
     }
@@ -362,6 +427,7 @@ function initSolicitudElectronica() {
     };
 
     initDynamicRows();
+    lockDateTyping();
     attachNavigation();
     registerSerializeOnSubmit();
     paintTotals();
@@ -376,10 +442,28 @@ function initSolicitudElectronica() {
     render();
 }
 
-function goToStepAndFocus(step, fieldId) {
+function clearFieldHighlights() {
+    document.querySelectorAll(".field-error").forEach(function (el) {
+        el.classList.remove("field-error");
+    });
+}
+
+function highlightInvalidFields(fieldIds) {
+    clearFieldHighlights();
+    (fieldIds || []).forEach(function (fieldId) {
+        var target = document.getElementById(fieldId) || document.querySelector('[id$="' + fieldId + '"]');
+        if (target) {
+            target.classList.add("field-error");
+        }
+    });
+}
+
+function goToStepAndFocus(step, fieldId, allFieldIds) {
     if (window.__solicitudNavigator) {
         window.__solicitudNavigator.goToStep(step);
     }
+
+    highlightInvalidFields(allFieldIds);
 
     var target = document.getElementById(fieldId) || document.querySelector('[id$="' + fieldId + '"]');
     if (target) {

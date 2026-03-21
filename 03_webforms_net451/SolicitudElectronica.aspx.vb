@@ -1,6 +1,9 @@
 Imports System
 Imports System.Collections.Generic
 Imports System.Globalization
+Imports System.Linq
+Imports System.Text.RegularExpressions
+Imports System.Web.Script.Serialization
 Imports System.Web.UI.WebControls
 
 Partial Class SolicitudElectronica
@@ -42,26 +45,8 @@ Partial Class SolicitudElectronica
         control.DataBind()
     End Sub
 
-    Protected Sub btnGuardar_Click(sender As Object, e As EventArgs) Handles btnGuardar.Click
-        Dim dto = ConstruirSolicitud()
-        Dim errores = _validacion.Validar(dto)
-
-        If errores.Count > 0 Then
-            MostrarPrimerError(errores)
-            Return
-        End If
-
-        If Not _repositorio.GuardarBorrador(dto) Then
-            lblMensaje.Text = "No fue posible guardar el borrador."
-            lblMensaje.CssClass = "message error"
-            Return
-        End If
-
-        lblMensaje.Text = "Borrador guardado correctamente."
-        lblMensaje.CssClass = "message ok"
-    End Sub
-
     Protected Sub btnEnviar_Click(sender As Object, e As EventArgs) Handles btnEnviar.Click
+        bltErrores.Visible = False
         Dim dto = ConstruirSolicitud()
         Dim errores = _validacion.Validar(dto)
 
@@ -84,60 +69,62 @@ Partial Class SolicitudElectronica
         Dim dto As New SolicitudFormularioDto()
 
         dto.TipoFormulario = ddlTipoFormulario.SelectedValue
-        dto.NombreContratante = txtNombreContratante.Text.Trim()
-        dto.NumeroPoliza = txtNumeroPoliza.Text.Trim()
+        dto.NombreContratante = SanitizarTexto(txtNombreContratante.Text, 120)
+        dto.NumeroPoliza = SanitizarTexto(txtNumeroPoliza.Text, 40)
         dto.SumaAsegurada = ParseDecimal(txtSumaAsegurada.Text)
 
-        dto.PrimerApellido = txtPrimerApellido.Text.Trim()
-        dto.SegundoApellido = txtSegundoApellido.Text.Trim()
-        dto.PrimerNombre = txtPrimerNombre.Text.Trim()
-        dto.SegundoNombre = txtSegundoNombre.Text.Trim()
+        dto.PrimerApellido = SanitizarTexto(txtPrimerApellido.Text, 60)
+        dto.SegundoApellido = SanitizarTexto(txtSegundoApellido.Text, 60)
+        dto.PrimerNombre = SanitizarTexto(txtPrimerNombre.Text, 60)
+        dto.SegundoNombre = SanitizarTexto(txtSegundoNombre.Text, 60)
         dto.TipoDocumento = ddlTipoDocumento.SelectedValue
-        dto.NumeroDocumento = txtNumeroDocumento.Text.Trim()
-        dto.LugarNacimiento = txtLugarNacimiento.Text.Trim()
-        dto.Nacionalidad = txtNacionalidad.Text.Trim()
-        dto.ProfesionOficio = txtProfesionOficio.Text.Trim()
+        dto.NumeroDocumento = SanitizarTexto(txtNumeroDocumento.Text, 30)
+        dto.LugarNacimiento = SanitizarTexto(txtLugarNacimiento.Text, 120)
+        dto.Nacionalidad = SanitizarTexto(txtNacionalidad.Text, 80)
+        dto.ProfesionOficio = SanitizarTexto(txtProfesionOficio.Text, 120)
         dto.EstaturaMetros = ParseDecimal(txtEstaturaMetros.Text)
         dto.PesoLibras = ParseDecimal(txtPesoLibras.Text)
-        dto.CargoDesempena = txtCargoDesempena.Text.Trim()
+        dto.CargoDesempena = SanitizarTexto(txtCargoDesempena.Text, 120)
         dto.SueldoMensual = ParseDecimal(txtSueldoMensual.Text)
 
         dto.Pais = ddlPais.SelectedValue
         dto.Departamento = ddlDepartamento.SelectedValue
         dto.Ciudad = ddlCiudad.SelectedValue
         dto.Municipio = ddlMunicipio.SelectedValue
-        dto.Calle = txtCalle.Text.Trim()
-        dto.Avenida = txtAvenida.Text.Trim()
-        dto.Celular = txtCelular.Text.Trim()
-        dto.Email = txtEmail.Text.Trim()
+        dto.Calle = SanitizarTexto(txtCalle.Text, 120)
+        dto.Avenida = SanitizarTexto(txtAvenida.Text, 120)
+        dto.Celular = SanitizarTexto(txtCelular.Text, 20)
+        dto.Email = SanitizarTexto(txtEmail.Text, 120)
 
         dto.TotalBeneficiariosVida = ParseDecimal(hfTotalVida.Value)
         dto.TotalBeneficiariosContingencia = ParseDecimal(hfTotalCont.Value)
-        dto.BeneficiariosVidaJson = hfVidaJson.Value
-        dto.BeneficiariosContingenciaJson = hfContJson.Value
-        dto.DependientesJson = hfDepJson.Value
+        dto.BeneficiariosVidaJson = SanitizarJson(hfVidaJson.Value)
+        dto.BeneficiariosContingenciaJson = SanitizarJson(hfContJson.Value)
+        dto.DependientesJson = SanitizarJson(hfDepJson.Value)
 
-        dto.SaludCorta1 = ddlSaludCorta1.SelectedValue
-        dto.SaludCorta2 = ddlSaludCorta2.SelectedValue
-        dto.SaludCorta3 = ddlSaludCorta3.SelectedValue
-        dto.SaludCorta4 = ddlSaludCorta4.SelectedValue
-        dto.SaludCortaDetalle = txtSaludCortaDetalle.Text.Trim()
+        dto.SaludCorta1 = ValorSiNo(ddlSaludCorta1.SelectedValue)
+        dto.SaludCorta2 = ValorSiNo(ddlSaludCorta2.SelectedValue)
+        dto.SaludCorta3 = ValorSiNo(ddlSaludCorta3.SelectedValue)
+        dto.SaludCorta4 = ValorSiNo(ddlSaludCorta4.SelectedValue)
+        dto.SaludCortaDetalle = SanitizarTexto(txtSaludCortaDetalle.Text, 1200)
 
-        dto.SaludLarga1 = ddlSaludLarga1.SelectedValue
-        dto.SaludLarga2 = ddlSaludLarga2.SelectedValue
-        dto.SaludLarga3 = ddlSaludLarga3.SelectedValue
-        dto.SaludLarga4 = ddlSaludLarga4.SelectedValue
-        dto.SaludLarga5 = ddlSaludLarga5.SelectedValue
-        dto.SaludLargaDetalle = txtSaludLargaDetalle.Text.Trim()
+        dto.SaludLarga1 = ValorSiNo(ddlSaludLarga1.SelectedValue)
+        dto.SaludLarga2 = ValorSiNo(ddlSaludLarga2.SelectedValue)
+        dto.SaludLarga3 = ValorSiNo(ddlSaludLarga3.SelectedValue)
+        dto.SaludLarga4 = ValorSiNo(ddlSaludLarga4.SelectedValue)
+        dto.SaludLarga5 = ValorSiNo(ddlSaludLarga5.SelectedValue)
+        dto.SaludLargaDetalle = SanitizarTexto(txtSaludLargaDetalle.Text, 1800)
 
-        dto.TomaMedicamentos = ddlMedicamentos.SelectedValue
-        dto.MedicamentosDetalle = txtMedicamentosDetalle.Text.Trim()
+        dto.TomaMedicamentos = ValorSiNo(ddlMedicamentos.SelectedValue)
+        dto.MedicamentosDetalle = SanitizarTexto(txtMedicamentosDetalle.Text, 1200)
 
         dto.AceptaDeclaracion = chkAceptaDeclaracion.Checked
-        dto.FirmaSolicitante = txtFirmaSolicitante.Text.Trim()
-        dto.FirmaPatrono = txtFirmaPatrono.Text.Trim()
+        dto.FirmaSolicitante = SanitizarTexto(txtFirmaSolicitante.Text, 120)
+        dto.FirmaPatrono = SanitizarTexto(txtFirmaPatrono.Text, 120)
         dto.FechaFirma = txtFechaFirma.Text.Trim()
-        dto.ObservacionesFinales = txtObservacionesFinales.Text.Trim()
+        dto.ObservacionesFinales = SanitizarTexto(txtObservacionesFinales.Text, 1000)
+
+        LimpiarBloquesNoAplicables(dto)
 
         Return dto
     End Function
@@ -147,7 +134,14 @@ Partial Class SolicitudElectronica
         lblMensaje.Text = first.Message
         lblMensaje.CssClass = "message error"
 
-        Dim script = String.Format("goToStepAndFocus({0}, '{1}');", first.Step, first.FieldId)
+        bltErrores.DataSource = errores.Select(Function(x) x.Message).Distinct().ToList()
+        bltErrores.DataBind()
+        bltErrores.Visible = True
+
+        Dim serializer As New JavaScriptSerializer()
+        Dim fieldIds = errores.Select(Function(x) x.FieldId).Distinct().ToArray()
+        Dim serializedFields = serializer.Serialize(fieldIds)
+        Dim script = String.Format("goToStepAndFocus({0}, '{1}', {2});", first.Step, first.FieldId, serializedFields)
         ScriptManager.RegisterStartupScript(Me, Me.GetType(), "focus-error", script, True)
     End Sub
 
@@ -160,9 +154,80 @@ Partial Class SolicitudElectronica
         Dim normalized = raw.Replace(",", ".")
 
         If Decimal.TryParse(normalized, NumberStyles.Any, CultureInfo.InvariantCulture, value) Then
-            Return value
+            Return Decimal.Round(value, 2, MidpointRounding.AwayFromZero)
         End If
 
         Return 0D
+    End Function
+
+    Private Sub LimpiarBloquesNoAplicables(dto As SolicitudFormularioDto)
+        If dto.TipoFormulario = "101" Then
+            dto.SaludCorta1 = String.Empty
+            dto.SaludCorta2 = String.Empty
+            dto.SaludCorta3 = String.Empty
+            dto.SaludCorta4 = String.Empty
+            dto.SaludCortaDetalle = String.Empty
+            dto.SaludLarga1 = String.Empty
+            dto.SaludLarga2 = String.Empty
+            dto.SaludLarga3 = String.Empty
+            dto.SaludLarga4 = String.Empty
+            dto.SaludLarga5 = String.Empty
+            dto.SaludLargaDetalle = String.Empty
+            dto.TomaMedicamentos = String.Empty
+            dto.MedicamentosDetalle = String.Empty
+        End If
+
+        If dto.TipoFormulario = "61" OrElse dto.TipoFormulario = "62" Then
+            dto.SaludLarga1 = String.Empty
+            dto.SaludLarga2 = String.Empty
+            dto.SaludLarga3 = String.Empty
+            dto.SaludLarga4 = String.Empty
+            dto.SaludLarga5 = String.Empty
+            dto.SaludLargaDetalle = String.Empty
+            dto.TomaMedicamentos = String.Empty
+            dto.MedicamentosDetalle = String.Empty
+            dto.DependientesJson = "[]"
+        End If
+
+        If dto.TipoFormulario <> "101" AndAlso dto.TipoFormulario <> "63" AndAlso dto.TipoFormulario <> "64" Then
+            dto.DependientesJson = "[]"
+        End If
+    End Sub
+
+    Private Function ValorSiNo(raw As String) As String
+        If raw = "SI" OrElse raw = "NO" Then
+            Return raw
+        End If
+
+        Return String.Empty
+    End Function
+
+    Private Function SanitizarTexto(raw As String, maxLen As Integer) As String
+        If String.IsNullOrWhiteSpace(raw) Then
+            Return String.Empty
+        End If
+
+        Dim clean = raw.Trim()
+        clean = Regex.Replace(clean, "[\u0000-\u001F]", String.Empty)
+        clean = clean.Replace("<", String.Empty).Replace(">", String.Empty)
+
+        If clean.Length > maxLen Then
+            clean = clean.Substring(0, maxLen)
+        End If
+
+        Return clean
+    End Function
+
+    Private Function SanitizarJson(raw As String) As String
+        If String.IsNullOrWhiteSpace(raw) Then
+            Return "[]"
+        End If
+
+        Dim clean = raw.Trim()
+        If clean.Length > 30000 Then
+            Return "[]"
+        End If
+
+        Return clean
     End Function
 End Class
