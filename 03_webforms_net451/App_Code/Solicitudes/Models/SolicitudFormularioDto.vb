@@ -33,11 +33,7 @@ Public Class SolicitudFormularioDto
     Public Property BeneficiariosContingenciaJson As String
     Public Property DependientesJson As String
 
-    Public Property SaludCorta1 As String
-    Public Property SaludCorta2 As String
-    Public Property SaludCorta3 As String
-    Public Property SaludCorta4 As String
-    Public Property SaludCortaDetalle As String
+    Public Property SaludCortaJson As String
 
     Public Property SaludLargaJson As String
 

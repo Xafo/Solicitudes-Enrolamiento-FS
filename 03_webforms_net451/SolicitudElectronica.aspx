@@ -229,11 +229,7 @@
                 <div class="card" id="saludCortaBlock">
                     <h3>Cuestionario corto (61/62)</h3>
                     <div class="grid one-col">
-                        <div class="field"><label>1. Ha sido victima de accidente?</label><asp:DropDownList ID="ddlSaludCorta1" runat="server" CssClass="input" /></div>
-                        <div class="field"><label>2. Ha sido sometido a intervencion quirurgica?</label><asp:DropDownList ID="ddlSaludCorta2" runat="server" CssClass="input" /></div>
-                        <div class="field"><label>3. Su capacidad de trabajo ha sido reducida?</label><asp:DropDownList ID="ddlSaludCorta3" runat="server" CssClass="input" /></div>
-                        <div class="field"><label>4. Usa drogas de prescripcion medica?</label><asp:DropDownList ID="ddlSaludCorta4" runat="server" CssClass="input" /></div>
-                         <div class="field"><label>Detalle respuestas afirmativas</label><asp:TextBox ID="txtSaludCortaDetalle" runat="server" CssClass="input" TextMode="MultiLine" Rows="3" MaxLength="1200" /></div>
+                        <div id="saludCortaPreguntas"></div>
                     </div>
                 </div>
 
@@ -314,6 +310,7 @@
             <asp:HiddenField ID="hfTotalCont" runat="server" />
             <asp:HiddenField ID="hfSaludLargaJson" runat="server" />
             <asp:HiddenField ID="hfMedicamentosJson" runat="server" />
+            <asp:HiddenField ID="hfSaludCortaJson" runat="server" />
         </main>
     </form>
 </body>

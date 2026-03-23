@@ -15,11 +15,19 @@ function initSolicitudElectronica() {
     var bodyVida = document.getElementById("bodyVida");
     var bodyCont = document.getElementById("bodyCont");
     var bodyDep = document.getElementById("bodyDep");
+    var saludCortaPreguntas = document.getElementById("saludCortaPreguntas");
     var saludLargaPreguntas = document.getElementById("saludLargaPreguntas");
     var current = 1;
 
     var parentescos = ["Conyuge", "Hijo", "Padre", "Madre", "Hermano"];
     var generos = ["M", "F"];
+
+    var shortQuestions = [
+        { id: "s1", text: "1. Ha sido victima de accidente?" },
+        { id: "s2", text: "2. Ha sido sometido a intervencion quirurgica?" },
+        { id: "s3", text: "3. Su capacidad de trabajo ha sido reducida?" },
+        { id: "s4", text: "4. Usa drogas de prescripcion medica?" }
+    ];
 
     var longQuestions = [
         { id: "q1a", text: "1.a Ha padecido enfermedades del corazon?" },
@@ -53,6 +61,7 @@ function initSolicitudElectronica() {
     var hfDepJson = bySuffix("hfDepJson");
     var hfTotalVida = bySuffix("hfTotalVida");
     var hfTotalCont = bySuffix("hfTotalCont");
+    var hfSaludCortaJson = bySuffix("hfSaludCortaJson");
     var hfSaludLargaJson = bySuffix("hfSaludLargaJson");
     var hfMedicamentosJson = bySuffix("hfMedicamentosJson");
 
@@ -226,13 +235,15 @@ function initSolicitudElectronica() {
 
     function clearHiddenSections(tipo) {
         if (tipo === "101") {
-            ["ddlSaludCorta1", "ddlSaludCorta2", "ddlSaludCorta3", "ddlSaludCorta4", "txtSaludCortaDetalle", "ddlMedicamentos"].forEach(clearControl);
+            ["ddlMedicamentos"].forEach(clearControl);
+            if (hfSaludCortaJson) hfSaludCortaJson.value = "[]";
             if (hfSaludLargaJson) hfSaludLargaJson.value = "[]";
             if (hfMedicamentosJson) hfMedicamentosJson.value = "[]";
         }
 
         if (tipo === "61" || tipo === "62") {
             ["ddlMedicamentos"].forEach(clearControl);
+            if (hfSaludCortaJson) hfSaludCortaJson.value = "[]";
             if (hfSaludLargaJson) hfSaludLargaJson.value = "[]";
             if (hfMedicamentosJson) hfMedicamentosJson.value = "[]";
             if (hfDepJson) hfDepJson.value = "[]";
@@ -240,6 +251,10 @@ function initSolicitudElectronica() {
 
         if (!isFormWithDependientes(tipo) && hfDepJson) {
             hfDepJson.value = "[]";
+        }
+
+        if (tipo !== "61" && tipo !== "62" && hfSaludCortaJson) {
+            hfSaludCortaJson.value = "[]";
         }
 
         if (!isLongHealthForm(tipo)) {
@@ -283,9 +298,23 @@ function initSolicitudElectronica() {
             });
         }
 
+        var saludCorta = [];
+        if (tipo === "61" || tipo === "62") {
+            saludCorta = Array.from(document.querySelectorAll("#saludCortaPreguntas .question-card")).map(function (card) {
+                return {
+                    id: card.getAttribute("data-question-id"),
+                    answer: card.querySelector(".q-answer").value,
+                    enfermedad: card.querySelector(".q-enfermedad").value.trim(),
+                    medico: card.querySelector(".q-medico").value.trim(),
+                    cuando: card.querySelector(".q-cuando").value.trim(),
+                    paciente: card.querySelector(".q-paciente").value.trim()
+                };
+            });
+        }
+
         var saludLarga = [];
         if (isLongHealthForm(tipo)) {
-            saludLarga = Array.from(document.querySelectorAll(".question-card")).map(function (card) {
+            saludLarga = Array.from(document.querySelectorAll("#saludLargaPreguntas .question-card")).map(function (card) {
                 return {
                     id: card.getAttribute("data-question-id"),
                     answer: card.querySelector(".q-answer").value,
@@ -312,6 +341,7 @@ function initSolicitudElectronica() {
         }
 
         if (hfVidaJson) hfVidaJson.value = JSON.stringify(vida);
+        if (hfSaludCortaJson) hfSaludCortaJson.value = JSON.stringify(saludCorta);
         if (hfContJson) hfContJson.value = JSON.stringify(cont);
         if (hfDepJson) hfDepJson.value = JSON.stringify(dep);
         if (hfSaludLargaJson) hfSaludLargaJson.value = JSON.stringify(saludLarga);
@@ -322,11 +352,26 @@ function initSolicitudElectronica() {
     }
 
     function initQuestionnaire() {
-        var saved = [];
+        var savedLong = [];
+        var savedShort = [];
         try {
-            saved = JSON.parse((hfSaludLargaJson && hfSaludLargaJson.value) || "[]");
+            savedLong = JSON.parse((hfSaludLargaJson && hfSaludLargaJson.value) || "[]");
         } catch (err) {
-            saved = [];
+            savedLong = [];
+        }
+
+        try {
+            savedShort = JSON.parse((hfSaludCortaJson && hfSaludCortaJson.value) || "[]");
+        } catch (err2) {
+            savedShort = [];
+        }
+
+        if (saludCortaPreguntas) {
+            saludCortaPreguntas.innerHTML = "";
+            shortQuestions.forEach(function (q) {
+                var cData = findBy(savedShort, function (x) { return x.id === q.id; }) || {};
+                saludCortaPreguntas.insertAdjacentHTML("beforeend", createQuestionCard(q, cData));
+            });
         }
 
         if (!saludLargaPreguntas) {
@@ -335,9 +380,25 @@ function initSolicitudElectronica() {
 
         saludLargaPreguntas.innerHTML = "";
         longQuestions.forEach(function (q) {
-            var data = findBy(saved, function (x) { return x.id === q.id; }) || {};
+            var data = findBy(savedLong, function (x) { return x.id === q.id; }) || {};
             saludLargaPreguntas.insertAdjacentHTML("beforeend", createQuestionCard(q, data));
         });
+
+        if (saludCortaPreguntas) {
+            saludCortaPreguntas.addEventListener("change", function (event) {
+                if (!event.target.classList.contains("q-answer")) {
+                    return;
+                }
+                var card = event.target.closest(".question-card");
+                var detail = card.querySelector(".question-detail");
+                if (event.target.value === "SI") {
+                    detail.classList.remove("is-hidden");
+                } else {
+                    detail.classList.add("is-hidden");
+                    detail.querySelectorAll("input").forEach(function (input) { input.value = ""; });
+                }
+            });
+        }
 
         saludLargaPreguntas.addEventListener("change", function (event) {
             if (!event.target.classList.contains("q-answer")) {
@@ -428,6 +489,13 @@ function initSolicitudElectronica() {
             if (event.target.classList.contains("pct-vida") || event.target.classList.contains("pct-cont")) {
                 paintTotals();
             }
+
+            if (event.target.classList.contains("med-asegurado") && event.target.value.trim() === "") {
+                var mRow = event.target.closest("tr");
+                if (mRow) {
+                    mRow.querySelectorAll("input").forEach(function (inp) { inp.value = ""; });
+                }
+            }
         });
 
         document.addEventListener("blur", function (event) {
@@ -466,7 +534,20 @@ function initSolicitudElectronica() {
         if (!medicamentosBlock || !ddlMedicamentos) {
             return;
         }
-        medicamentosBlock.classList.toggle("is-hidden", ddlMedicamentos.value !== "SI");
+        var show = ddlMedicamentos.value === "SI";
+        medicamentosBlock.classList.toggle("is-hidden", !show);
+
+        if (show && bodyMed && bodyMed.children.length === 0) {
+            bodyMed.insertAdjacentHTML("beforeend", createMedRow({}));
+        }
+
+        if (!show && bodyMed) {
+            bodyMed.innerHTML = "";
+            bodyMed.insertAdjacentHTML("beforeend", createMedRow({}));
+            if (hfMedicamentosJson) {
+                hfMedicamentosJson.value = "[]";
+            }
+        }
     }
 
     function getVisibleSteps() {

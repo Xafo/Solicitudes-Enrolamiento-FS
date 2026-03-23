@@ -11,6 +11,8 @@ Public Class ClassSolicitudValidacion
         "q2a", "q2b", "q3", "q4a", "q4b", "q4c", "q4d", "q5"
     }
 
+    Private Shared ReadOnly SaludCortaQuestionIds As String() = {"s1", "s2", "s3", "s4"}
+
     Public Function Validar(dto As SolicitudFormularioDto) As List(Of SolicitudValidationError)
         Dim errores As New List(Of SolicitudValidationError)()
 
@@ -106,13 +108,11 @@ Public Class ClassSolicitudValidacion
         End If
 
         If dto.TipoFormulario = "61" OrElse dto.TipoFormulario = "62" Then
-            If String.IsNullOrWhiteSpace(dto.SaludCorta1) Then errores.Add(CreateSolicitudValidationError("Complete salud corta 1.", "ddlSaludCorta1", 5))
-            If String.IsNullOrWhiteSpace(dto.SaludCorta2) Then errores.Add(CreateSolicitudValidationError("Complete salud corta 2.", "ddlSaludCorta2", 5))
-            If String.IsNullOrWhiteSpace(dto.SaludCorta3) Then errores.Add(CreateSolicitudValidationError("Complete salud corta 3.", "ddlSaludCorta3", 5))
-            If String.IsNullOrWhiteSpace(dto.SaludCorta4) Then errores.Add(CreateSolicitudValidationError("Complete salud corta 4.", "ddlSaludCorta4", 5))
-
-            If TieneRespuestaSi(dto.SaludCorta1, dto.SaludCorta2, dto.SaludCorta3, dto.SaludCorta4) AndAlso String.IsNullOrWhiteSpace(dto.SaludCortaDetalle) Then
-                errores.Add(CreateSolicitudValidationError("Complete detalle para respuestas afirmativas de salud corta.", "txtSaludCortaDetalle", 5))
+            Dim saludCortaRows = ParseRows(dto.SaludCortaJson)
+            If saludCortaRows Is Nothing Then
+                errores.Add(CreateSolicitudValidationError("Cuestionario corto tiene formato invalido.", "saludCortaPreguntas", 5))
+            Else
+                ValidarCuestionarioCorto(saludCortaRows, errores)
             End If
         End If
 
@@ -269,6 +269,49 @@ Public Class ClassSolicitudValidacion
         Return rows
     End Function
 
+    Private Sub ValidarCuestionarioCorto(rows As List(Of Dictionary(Of String, String)), errores As List(Of SolicitudValidationError))
+        If rows.Count = 0 Then
+            errores.Add(CreateSolicitudValidationError("Complete el cuestionario corto.", "saludCortaPreguntas", 5))
+            Return
+        End If
+
+        For Each qId As String In SaludCortaQuestionIds
+            Dim row = rows.Find(Function(x) ObtenerValor(x, "id") = qId)
+            If row Is Nothing Then
+                errores.Add(CreateSolicitudValidationError("Falta respuesta en el cuestionario corto.", "saludCortaPreguntas", 5))
+                Return
+            End If
+
+            Dim answer = ObtenerValor(row, "answer")
+            If answer <> "SI" AndAlso answer <> "NO" Then
+                errores.Add(CreateSolicitudValidationError("Todas las preguntas del cuestionario corto son obligatorias.", "saludCortaPreguntas", 5))
+                Return
+            End If
+
+            If answer = "SI" Then
+                If String.IsNullOrWhiteSpace(ObtenerValor(row, "enfermedad")) Then
+                    errores.Add(CreateSolicitudValidationError("Complete 'Especifique enfermedad' para respuestas SI en cuestionario corto.", "saludCortaPreguntas", 5))
+                    Return
+                End If
+
+                If String.IsNullOrWhiteSpace(ObtenerValor(row, "medico")) Then
+                    errores.Add(CreateSolicitudValidationError("Complete 'Nombre y direccion del medico tratante' para respuestas SI en cuestionario corto.", "saludCortaPreguntas", 5))
+                    Return
+                End If
+
+                If String.IsNullOrWhiteSpace(ObtenerValor(row, "cuando")) Then
+                    errores.Add(CreateSolicitudValidationError("Complete 'Cuando?, duracion, secuela?' para respuestas SI en cuestionario corto.", "saludCortaPreguntas", 5))
+                    Return
+                End If
+
+                If String.IsNullOrWhiteSpace(ObtenerValor(row, "paciente")) Then
+                    errores.Add(CreateSolicitudValidationError("Complete 'Paciente/asegurado' para respuestas SI en cuestionario corto.", "saludCortaPreguntas", 5))
+                    Return
+                End If
+            End If
+        Next
+    End Sub
+
     Private Sub ValidarCuestionarioLargo(rows As List(Of Dictionary(Of String, String)), errores As List(Of SolicitudValidationError))
         If rows.Count = 0 Then
             errores.Add(CreateSolicitudValidationError("Complete el cuestionario largo.", "saludLargaPreguntas", 5))
@@ -349,16 +392,6 @@ Public Class ClassSolicitudValidacion
             End If
         Next
     End Sub
-
-    Private Function TieneRespuestaSi(ParamArray respuestas As String()) As Boolean
-        For Each r As String In respuestas
-            If r = "SI" Then
-                Return True
-            End If
-        Next
-
-        Return False
-    End Function
 
     Private Function ObtenerValor(row As Dictionary(Of String, String), key As String) As String
         If row Is Nothing OrElse Not row.ContainsKey(key) Then

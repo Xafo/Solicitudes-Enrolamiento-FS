@@ -22,10 +22,6 @@ Partial Class SolicitudElectronica
     Private Sub CargarCatalogosBase()
         CargarLista(ddlTipoFormulario, _catalogos.ObtenerTiposFormulario())
         CargarLista(ddlTipoDocumento, _catalogos.ObtenerTiposDocumento())
-        CargarLista(ddlSaludCorta1, _catalogos.ObtenerSiNo())
-        CargarLista(ddlSaludCorta2, _catalogos.ObtenerSiNo())
-        CargarLista(ddlSaludCorta3, _catalogos.ObtenerSiNo())
-        CargarLista(ddlSaludCorta4, _catalogos.ObtenerSiNo())
         CargarLista(ddlMedicamentos, _catalogos.ObtenerSiNo())
         CargarLista(ddlPais, _catalogos.ObtenerPaises())
         CargarLista(ddlDepartamento, _catalogos.ObtenerDepartamentos())
@@ -97,11 +93,7 @@ Partial Class SolicitudElectronica
         dto.BeneficiariosContingenciaJson = SanitizarJson(hfContJson.Value)
         dto.DependientesJson = SanitizarJson(hfDepJson.Value)
 
-        dto.SaludCorta1 = ValorSiNo(ddlSaludCorta1.SelectedValue)
-        dto.SaludCorta2 = ValorSiNo(ddlSaludCorta2.SelectedValue)
-        dto.SaludCorta3 = ValorSiNo(ddlSaludCorta3.SelectedValue)
-        dto.SaludCorta4 = ValorSiNo(ddlSaludCorta4.SelectedValue)
-        dto.SaludCortaDetalle = SanitizarTexto(txtSaludCortaDetalle.Text, 1200)
+        dto.SaludCortaJson = SanitizarJson(hfSaludCortaJson.Value)
 
         dto.SaludLargaJson = SanitizarJson(hfSaludLargaJson.Value)
 
@@ -152,11 +144,7 @@ Partial Class SolicitudElectronica
 
     Private Sub LimpiarBloquesNoAplicables(dto As SolicitudFormularioDto)
         If dto.TipoFormulario = "101" Then
-            dto.SaludCorta1 = String.Empty
-            dto.SaludCorta2 = String.Empty
-            dto.SaludCorta3 = String.Empty
-            dto.SaludCorta4 = String.Empty
-            dto.SaludCortaDetalle = String.Empty
+            dto.SaludCortaJson = "[]"
             dto.SaludLargaJson = "[]"
             dto.TomaMedicamentos = String.Empty
             dto.MedicamentosJson = "[]"
@@ -167,6 +155,10 @@ Partial Class SolicitudElectronica
             dto.TomaMedicamentos = String.Empty
             dto.MedicamentosJson = "[]"
             dto.DependientesJson = "[]"
+        End If
+
+        If dto.TipoFormulario = "63" OrElse dto.TipoFormulario = "64" Then
+            dto.SaludCortaJson = "[]"
         End If
 
         If dto.TipoFormulario <> "101" AndAlso dto.TipoFormulario <> "63" AndAlso dto.TipoFormulario <> "64" Then
