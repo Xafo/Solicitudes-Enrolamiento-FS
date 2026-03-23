@@ -56,6 +56,37 @@ function initSolicitudElectronica() {
     var hfSaludLargaJson = bySuffix("hfSaludLargaJson");
     var hfMedicamentosJson = bySuffix("hfMedicamentosJson");
 
+    function inArray(arr, value) {
+        return Array.isArray(arr) && arr.indexOf(value) >= 0;
+    }
+
+    function findBy(list, predicate) {
+        if (!Array.isArray(list)) {
+            return null;
+        }
+        for (var i = 0; i < list.length; i += 1) {
+            if (predicate(list[i])) {
+                return list[i];
+            }
+        }
+        return null;
+    }
+
+    function hasAnyValue(obj) {
+        if (!obj) {
+            return false;
+        }
+        for (var k in obj) {
+            if (Object.prototype.hasOwnProperty.call(obj, k)) {
+                var v = obj[k];
+                if ((v || "").toString().trim() !== "") {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     function createOptions(options, selected) {
         var html = '<option value="">Seleccione...</option>';
         options.forEach(function (item) {
@@ -167,9 +198,7 @@ function initSolicitudElectronica() {
 
     function readRows(selector, mapper) {
         return Array.from(document.querySelectorAll(selector)).map(mapper).filter(function (row) {
-            return Object.values(row).some(function (value) {
-                return (value || "").toString().trim() !== "";
-            });
+            return hasAnyValue(row);
         });
     }
 
@@ -306,7 +335,7 @@ function initSolicitudElectronica() {
 
         saludLargaPreguntas.innerHTML = "";
         longQuestions.forEach(function (q) {
-            var data = saved.find(function (x) { return x.id === q.id; }) || {};
+            var data = findBy(saved, function (x) { return x.id === q.id; }) || {};
             saludLargaPreguntas.insertAdjacentHTML("beforeend", createQuestionCard(q, data));
         });
 
@@ -450,7 +479,7 @@ function initSolicitudElectronica() {
 
     function ensureCurrentVisible() {
         var visible = getVisibleSteps();
-        if (!visible.includes(current)) {
+        if (!inArray(visible, current)) {
             current = visible[0] || 1;
         }
     }
