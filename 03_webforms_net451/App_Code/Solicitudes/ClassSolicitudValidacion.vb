@@ -7,8 +7,8 @@ Imports System.Web.Script.Serialization
 Public Class ClassSolicitudValidacion
     Private Const MaxRows As Integer = 50
 
-    Public Function Validar(dto As SolicitudFormularioDto) As List(Of ValidationError)
-        Dim errores As New List(Of ValidationError)()
+    Public Function Validar(dto As SolicitudFormularioDto) As List(Of SolicitudValidationError)
+        Dim errores As New List(Of SolicitudValidationError)()
 
         ValidarPaso1(dto, errores)
         ValidarPaso2(dto, errores)
@@ -20,143 +20,143 @@ Public Class ClassSolicitudValidacion
         Return errores
     End Function
 
-    Private Sub ValidarPaso1(dto As SolicitudFormularioDto, errores As List(Of ValidationError))
-        If String.IsNullOrWhiteSpace(dto.TipoFormulario) Then errores.Add(New ValidationError("Seleccione tipo de formulario.", "ddlTipoFormulario", 1))
-        If String.IsNullOrWhiteSpace(dto.NombreContratante) Then errores.Add(New ValidationError("Ingrese nombre del contratante.", "txtNombreContratante", 1))
-        If String.IsNullOrWhiteSpace(dto.NumeroPoliza) Then errores.Add(New ValidationError("Ingrese numero de poliza.", "txtNumeroPoliza", 1))
-        If dto.SumaAsegurada <= 0D Then errores.Add(New ValidationError("Ingrese suma asegurada valida.", "txtSumaAsegurada", 1))
+    Private Sub ValidarPaso1(dto As SolicitudFormularioDto, errores As List(Of SolicitudValidationError))
+        If String.IsNullOrWhiteSpace(dto.TipoFormulario) Then errores.Add(CreateSolicitudValidationError("Seleccione tipo de formulario.", "ddlTipoFormulario", 1))
+        If String.IsNullOrWhiteSpace(dto.NombreContratante) Then errores.Add(CreateSolicitudValidationError("Ingrese nombre del contratante.", "txtNombreContratante", 1))
+        If String.IsNullOrWhiteSpace(dto.NumeroPoliza) Then errores.Add(CreateSolicitudValidationError("Ingrese numero de poliza.", "txtNumeroPoliza", 1))
+        If dto.SumaAsegurada <= 0D Then errores.Add(CreateSolicitudValidationError("Ingrese suma asegurada valida.", "txtSumaAsegurada", 1))
     End Sub
 
-    Private Sub ValidarPaso2(dto As SolicitudFormularioDto, errores As List(Of ValidationError))
-        If String.IsNullOrWhiteSpace(dto.PrimerApellido) Then errores.Add(New ValidationError("Ingrese primer apellido.", "txtPrimerApellido", 2))
-        If String.IsNullOrWhiteSpace(dto.PrimerNombre) Then errores.Add(New ValidationError("Ingrese primer nombre.", "txtPrimerNombre", 2))
-        If String.IsNullOrWhiteSpace(dto.TipoDocumento) Then errores.Add(New ValidationError("Seleccione tipo de documento.", "ddlTipoDocumento", 2))
+    Private Sub ValidarPaso2(dto As SolicitudFormularioDto, errores As List(Of SolicitudValidationError))
+        If String.IsNullOrWhiteSpace(dto.PrimerApellido) Then errores.Add(CreateSolicitudValidationError("Ingrese primer apellido.", "txtPrimerApellido", 2))
+        If String.IsNullOrWhiteSpace(dto.PrimerNombre) Then errores.Add(CreateSolicitudValidationError("Ingrese primer nombre.", "txtPrimerNombre", 2))
+        If String.IsNullOrWhiteSpace(dto.TipoDocumento) Then errores.Add(CreateSolicitudValidationError("Seleccione tipo de documento.", "ddlTipoDocumento", 2))
         If String.IsNullOrWhiteSpace(dto.NumeroDocumento) Then
-            errores.Add(New ValidationError("Ingrese numero de identificacion.", "txtNumeroDocumento", 2))
+            errores.Add(CreateSolicitudValidationError("Ingrese numero de identificacion.", "txtNumeroDocumento", 2))
         ElseIf Not ValidarDocumento(dto.TipoDocumento, dto.NumeroDocumento) Then
-            errores.Add(New ValidationError("Numero de identificacion invalido para el tipo seleccionado.", "txtNumeroDocumento", 2))
+            errores.Add(CreateSolicitudValidationError("Numero de identificacion invalido para el tipo seleccionado.", "txtNumeroDocumento", 2))
         End If
 
-        If String.IsNullOrWhiteSpace(dto.LugarNacimiento) Then errores.Add(New ValidationError("Ingrese lugar de nacimiento.", "txtLugarNacimiento", 2))
-        If String.IsNullOrWhiteSpace(dto.Nacionalidad) Then errores.Add(New ValidationError("Ingrese nacionalidad.", "txtNacionalidad", 2))
-        If String.IsNullOrWhiteSpace(dto.ProfesionOficio) Then errores.Add(New ValidationError("Ingrese profesion u oficio.", "txtProfesionOficio", 2))
-        If dto.EstaturaMetros < 0.5D OrElse dto.EstaturaMetros > 2.5D Then errores.Add(New ValidationError("Estatura debe estar entre 0.50 y 2.50 metros.", "txtEstaturaMetros", 2))
-        If dto.PesoLibras < 20D OrElse dto.PesoLibras > 600D Then errores.Add(New ValidationError("Peso debe estar entre 20 y 600 libras.", "txtPesoLibras", 2))
-        If String.IsNullOrWhiteSpace(dto.CargoDesempena) Then errores.Add(New ValidationError("Ingrese cargo que desempena.", "txtCargoDesempena", 2))
-        If dto.SueldoMensual <= 0D OrElse dto.SueldoMensual > 99999999D Then errores.Add(New ValidationError("Sueldo mensual invalido.", "txtSueldoMensual", 2))
+        If String.IsNullOrWhiteSpace(dto.LugarNacimiento) Then errores.Add(CreateSolicitudValidationError("Ingrese lugar de nacimiento.", "txtLugarNacimiento", 2))
+        If String.IsNullOrWhiteSpace(dto.Nacionalidad) Then errores.Add(CreateSolicitudValidationError("Ingrese nacionalidad.", "txtNacionalidad", 2))
+        If String.IsNullOrWhiteSpace(dto.ProfesionOficio) Then errores.Add(CreateSolicitudValidationError("Ingrese profesion u oficio.", "txtProfesionOficio", 2))
+        If dto.EstaturaMetros < 0.5D OrElse dto.EstaturaMetros > 2.5D Then errores.Add(CreateSolicitudValidationError("Estatura debe estar entre 0.50 y 2.50 metros.", "txtEstaturaMetros", 2))
+        If dto.PesoLibras < 20D OrElse dto.PesoLibras > 600D Then errores.Add(CreateSolicitudValidationError("Peso debe estar entre 20 y 600 libras.", "txtPesoLibras", 2))
+        If String.IsNullOrWhiteSpace(dto.CargoDesempena) Then errores.Add(CreateSolicitudValidationError("Ingrese cargo que desempena.", "txtCargoDesempena", 2))
+        If dto.SueldoMensual <= 0D OrElse dto.SueldoMensual > 99999999D Then errores.Add(CreateSolicitudValidationError("Sueldo mensual invalido.", "txtSueldoMensual", 2))
     End Sub
 
-    Private Sub ValidarPaso3(dto As SolicitudFormularioDto, errores As List(Of ValidationError))
-        If String.IsNullOrWhiteSpace(dto.Pais) Then errores.Add(New ValidationError("Seleccione pais.", "ddlPais", 3))
-        If String.IsNullOrWhiteSpace(dto.Departamento) Then errores.Add(New ValidationError("Seleccione departamento.", "ddlDepartamento", 3))
-        If String.IsNullOrWhiteSpace(dto.Ciudad) Then errores.Add(New ValidationError("Seleccione ciudad.", "ddlCiudad", 3))
-        If String.IsNullOrWhiteSpace(dto.Municipio) Then errores.Add(New ValidationError("Seleccione municipio.", "ddlMunicipio", 3))
+    Private Sub ValidarPaso3(dto As SolicitudFormularioDto, errores As List(Of SolicitudValidationError))
+        If String.IsNullOrWhiteSpace(dto.Pais) Then errores.Add(CreateSolicitudValidationError("Seleccione pais.", "ddlPais", 3))
+        If String.IsNullOrWhiteSpace(dto.Departamento) Then errores.Add(CreateSolicitudValidationError("Seleccione departamento.", "ddlDepartamento", 3))
+        If String.IsNullOrWhiteSpace(dto.Ciudad) Then errores.Add(CreateSolicitudValidationError("Seleccione ciudad.", "ddlCiudad", 3))
+        If String.IsNullOrWhiteSpace(dto.Municipio) Then errores.Add(CreateSolicitudValidationError("Seleccione municipio.", "ddlMunicipio", 3))
         If String.IsNullOrWhiteSpace(dto.Celular) Then
-            errores.Add(New ValidationError("Ingrese celular.", "txtCelular", 3))
+            errores.Add(CreateSolicitudValidationError("Ingrese celular.", "txtCelular", 3))
         ElseIf Not Regex.IsMatch(dto.Celular, "^[0-9\-\s\+\(\)]{7,20}$") Then
-            errores.Add(New ValidationError("Celular tiene formato invalido.", "txtCelular", 3))
+            errores.Add(CreateSolicitudValidationError("Celular tiene formato invalido.", "txtCelular", 3))
         End If
 
         If Not String.IsNullOrWhiteSpace(dto.Email) AndAlso Not Regex.IsMatch(dto.Email, "^[^@\s]+@[^@\s]+\.[^@\s]+$") Then
-            errores.Add(New ValidationError("E-mail invalido.", "txtEmail", 3))
+            errores.Add(CreateSolicitudValidationError("E-mail invalido.", "txtEmail", 3))
         End If
     End Sub
 
-    Private Sub ValidarPaso4(dto As SolicitudFormularioDto, errores As List(Of ValidationError))
+    Private Sub ValidarPaso4(dto As SolicitudFormularioDto, errores As List(Of SolicitudValidationError))
         Dim vidaRows = ParseRows(dto.BeneficiariosVidaJson)
         If vidaRows Is Nothing Then
-            errores.Add(New ValidationError("Beneficiarios de vida contiene formato invalido.", "bodyVida", 4))
+            errores.Add(CreateSolicitudValidationError("Beneficiarios de vida contiene formato invalido.", "bodyVida", 4))
         Else
             ValidarFilasBeneficiarios(vidaRows, "vida", errores)
         End If
 
         Dim contRows = ParseRows(dto.BeneficiariosContingenciaJson)
         If contRows Is Nothing Then
-            errores.Add(New ValidationError("Beneficiarios de contingencia contiene formato invalido.", "bodyCont", 4))
+            errores.Add(CreateSolicitudValidationError("Beneficiarios de contingencia contiene formato invalido.", "bodyCont", 4))
         Else
             ValidarFilasBeneficiarios(contRows, "cont", errores)
         End If
 
         If Decimal.Round(dto.TotalBeneficiariosVida, 2) <> 100D Then
-            errores.Add(New ValidationError("Beneficiarios de vida deben sumar 100%.", "hfTotalVida", 4))
+            errores.Add(CreateSolicitudValidationError("Beneficiarios de vida deben sumar 100%.", "hfTotalVida", 4))
         End If
 
         If Decimal.Round(dto.TotalBeneficiariosContingencia, 2) <> 100D Then
-            errores.Add(New ValidationError("Beneficiarios de contingencia deben sumar 100%.", "hfTotalCont", 4))
+            errores.Add(CreateSolicitudValidationError("Beneficiarios de contingencia deben sumar 100%.", "hfTotalCont", 4))
         End If
 
         Dim requiereDependientes = dto.TipoFormulario = "101" OrElse dto.TipoFormulario = "63" OrElse dto.TipoFormulario = "64"
         If requiereDependientes Then
             Dim depRows = ParseRows(dto.DependientesJson)
             If depRows Is Nothing Then
-                errores.Add(New ValidationError("Dependientes contiene formato invalido.", "bodyDep", 4))
+                errores.Add(CreateSolicitudValidationError("Dependientes contiene formato invalido.", "bodyDep", 4))
             Else
                 ValidarFilasDependientes(depRows, dto.TipoFormulario, errores)
             End If
         End If
     End Sub
 
-    Private Sub ValidarPaso5(dto As SolicitudFormularioDto, errores As List(Of ValidationError))
+    Private Sub ValidarPaso5(dto As SolicitudFormularioDto, errores As List(Of SolicitudValidationError))
         If dto.TipoFormulario = "101" Then
             Return
         End If
 
         If dto.TipoFormulario = "61" OrElse dto.TipoFormulario = "62" Then
-            If String.IsNullOrWhiteSpace(dto.SaludCorta1) Then errores.Add(New ValidationError("Complete salud corta 1.", "ddlSaludCorta1", 5))
-            If String.IsNullOrWhiteSpace(dto.SaludCorta2) Then errores.Add(New ValidationError("Complete salud corta 2.", "ddlSaludCorta2", 5))
-            If String.IsNullOrWhiteSpace(dto.SaludCorta3) Then errores.Add(New ValidationError("Complete salud corta 3.", "ddlSaludCorta3", 5))
-            If String.IsNullOrWhiteSpace(dto.SaludCorta4) Then errores.Add(New ValidationError("Complete salud corta 4.", "ddlSaludCorta4", 5))
+            If String.IsNullOrWhiteSpace(dto.SaludCorta1) Then errores.Add(CreateSolicitudValidationError("Complete salud corta 1.", "ddlSaludCorta1", 5))
+            If String.IsNullOrWhiteSpace(dto.SaludCorta2) Then errores.Add(CreateSolicitudValidationError("Complete salud corta 2.", "ddlSaludCorta2", 5))
+            If String.IsNullOrWhiteSpace(dto.SaludCorta3) Then errores.Add(CreateSolicitudValidationError("Complete salud corta 3.", "ddlSaludCorta3", 5))
+            If String.IsNullOrWhiteSpace(dto.SaludCorta4) Then errores.Add(CreateSolicitudValidationError("Complete salud corta 4.", "ddlSaludCorta4", 5))
 
             If TieneRespuestaSi(dto.SaludCorta1, dto.SaludCorta2, dto.SaludCorta3, dto.SaludCorta4) AndAlso String.IsNullOrWhiteSpace(dto.SaludCortaDetalle) Then
-                errores.Add(New ValidationError("Complete detalle para respuestas afirmativas de salud corta.", "txtSaludCortaDetalle", 5))
+                errores.Add(CreateSolicitudValidationError("Complete detalle para respuestas afirmativas de salud corta.", "txtSaludCortaDetalle", 5))
             End If
         End If
 
         If dto.TipoFormulario = "63" OrElse dto.TipoFormulario = "64" Then
-            If String.IsNullOrWhiteSpace(dto.SaludLarga1) Then errores.Add(New ValidationError("Complete salud larga 1.", "ddlSaludLarga1", 5))
-            If String.IsNullOrWhiteSpace(dto.SaludLarga2) Then errores.Add(New ValidationError("Complete salud larga 2.", "ddlSaludLarga2", 5))
-            If String.IsNullOrWhiteSpace(dto.SaludLarga3) Then errores.Add(New ValidationError("Complete salud larga 3.", "ddlSaludLarga3", 5))
-            If String.IsNullOrWhiteSpace(dto.SaludLarga4) Then errores.Add(New ValidationError("Complete salud larga 4.", "ddlSaludLarga4", 5))
-            If String.IsNullOrWhiteSpace(dto.SaludLarga5) Then errores.Add(New ValidationError("Complete salud larga 5.", "ddlSaludLarga5", 5))
+            If String.IsNullOrWhiteSpace(dto.SaludLarga1) Then errores.Add(CreateSolicitudValidationError("Complete salud larga 1.", "ddlSaludLarga1", 5))
+            If String.IsNullOrWhiteSpace(dto.SaludLarga2) Then errores.Add(CreateSolicitudValidationError("Complete salud larga 2.", "ddlSaludLarga2", 5))
+            If String.IsNullOrWhiteSpace(dto.SaludLarga3) Then errores.Add(CreateSolicitudValidationError("Complete salud larga 3.", "ddlSaludLarga3", 5))
+            If String.IsNullOrWhiteSpace(dto.SaludLarga4) Then errores.Add(CreateSolicitudValidationError("Complete salud larga 4.", "ddlSaludLarga4", 5))
+            If String.IsNullOrWhiteSpace(dto.SaludLarga5) Then errores.Add(CreateSolicitudValidationError("Complete salud larga 5.", "ddlSaludLarga5", 5))
 
             If TieneRespuestaSi(dto.SaludLarga1, dto.SaludLarga2, dto.SaludLarga3, dto.SaludLarga4, dto.SaludLarga5) AndAlso String.IsNullOrWhiteSpace(dto.SaludLargaDetalle) Then
-                errores.Add(New ValidationError("Complete detalle para respuestas afirmativas de salud larga.", "txtSaludLargaDetalle", 5))
+                errores.Add(CreateSolicitudValidationError("Complete detalle para respuestas afirmativas de salud larga.", "txtSaludLargaDetalle", 5))
             End If
 
             If dto.TomaMedicamentos = "SI" AndAlso String.IsNullOrWhiteSpace(dto.MedicamentosDetalle) Then
-                errores.Add(New ValidationError("Complete detalle de medicamentos.", "txtMedicamentosDetalle", 5))
+                errores.Add(CreateSolicitudValidationError("Complete detalle de medicamentos.", "txtMedicamentosDetalle", 5))
             End If
         End If
     End Sub
 
-    Private Sub ValidarPaso6(dto As SolicitudFormularioDto, errores As List(Of ValidationError))
+    Private Sub ValidarPaso6(dto As SolicitudFormularioDto, errores As List(Of SolicitudValidationError))
         If Not dto.AceptaDeclaracion Then
-            errores.Add(New ValidationError("Debe aceptar la declaracion legal.", "chkAceptaDeclaracion", 6))
+            errores.Add(CreateSolicitudValidationError("Debe aceptar la declaracion legal.", "chkAceptaDeclaracion", 6))
         End If
 
         If String.IsNullOrWhiteSpace(dto.FirmaSolicitante) Then
-            errores.Add(New ValidationError("Ingrese firma del solicitante.", "txtFirmaSolicitante", 6))
+            errores.Add(CreateSolicitudValidationError("Ingrese firma del solicitante.", "txtFirmaSolicitante", 6))
         End If
 
         If String.IsNullOrWhiteSpace(dto.FirmaPatrono) Then
-            errores.Add(New ValidationError("Ingrese firma del patrono/contratante.", "txtFirmaPatrono", 6))
+            errores.Add(CreateSolicitudValidationError("Ingrese firma del patrono/contratante.", "txtFirmaPatrono", 6))
         End If
 
         If String.IsNullOrWhiteSpace(dto.FechaFirma) Then
-            errores.Add(New ValidationError("Ingrese fecha de firma.", "txtFechaFirma", 6))
+            errores.Add(CreateSolicitudValidationError("Ingrese fecha de firma.", "txtFechaFirma", 6))
         Else
             Dim parsed As DateTime
             If Not DateTime.TryParseExact(dto.FechaFirma, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, parsed) Then
-                errores.Add(New ValidationError("Fecha de firma invalida.", "txtFechaFirma", 6))
+                errores.Add(CreateSolicitudValidationError("Fecha de firma invalida.", "txtFechaFirma", 6))
             End If
         End If
     End Sub
 
-    Private Sub ValidarFilasBeneficiarios(rows As List(Of Dictionary(Of String, String)), section As String, errores As List(Of ValidationError))
+    Private Sub ValidarFilasBeneficiarios(rows As List(Of Dictionary(Of String, String)), section As String, errores As List(Of SolicitudValidationError))
         If rows.Count = 0 Then
             Dim fieldId = If(section = "vida", "bodyVida", "bodyCont")
             Dim msg = If(section = "vida", "Agregue al menos un beneficiario de vida.", "Agregue al menos un beneficiario de contingencia.")
-            errores.Add(New ValidationError(msg, fieldId, 4))
+            errores.Add(CreateSolicitudValidationError(msg, fieldId, 4))
             Return
         End If
 
@@ -167,30 +167,30 @@ Public Class ClassSolicitudValidacion
             Dim porcentajeRaw = ObtenerValor(row, "porcentaje")
 
             If String.IsNullOrWhiteSpace(nombre) Then
-                errores.Add(New ValidationError("Cada beneficiario debe tener nombre.", If(section = "vida", "bodyVida", "bodyCont"), 4))
+                errores.Add(CreateSolicitudValidationError("Cada beneficiario debe tener nombre.", If(section = "vida", "bodyVida", "bodyCont"), 4))
                 Exit For
             End If
 
             If String.IsNullOrWhiteSpace(parentesco) Then
-                errores.Add(New ValidationError("Cada beneficiario debe tener parentesco.", If(section = "vida", "bodyVida", "bodyCont"), 4))
+                errores.Add(CreateSolicitudValidationError("Cada beneficiario debe tener parentesco.", If(section = "vida", "bodyVida", "bodyCont"), 4))
                 Exit For
             End If
 
             Dim parsedFecha As DateTime
             If String.IsNullOrWhiteSpace(fecha) OrElse Not DateTime.TryParseExact(fecha, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, parsedFecha) Then
-                errores.Add(New ValidationError("Cada beneficiario debe tener fecha valida.", If(section = "vida", "bodyVida", "bodyCont"), 4))
+                errores.Add(CreateSolicitudValidationError("Cada beneficiario debe tener fecha valida.", If(section = "vida", "bodyVida", "bodyCont"), 4))
                 Exit For
             End If
 
             Dim pct As Decimal
             If Not Decimal.TryParse(porcentajeRaw.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, pct) OrElse pct <= 0D OrElse pct > 100D Then
-                errores.Add(New ValidationError("Porcentaje de beneficiario invalido.", If(section = "vida", "bodyVida", "bodyCont"), 4))
+                errores.Add(CreateSolicitudValidationError("Porcentaje de beneficiario invalido.", If(section = "vida", "bodyVida", "bodyCont"), 4))
                 Exit For
             End If
         Next
     End Sub
 
-    Private Sub ValidarFilasDependientes(rows As List(Of Dictionary(Of String, String)), tipoFormulario As String, errores As List(Of ValidationError))
+    Private Sub ValidarFilasDependientes(rows As List(Of Dictionary(Of String, String)), tipoFormulario As String, errores As List(Of SolicitudValidationError))
         For Each row In rows
             Dim nombre = ObtenerValor(row, "nombre")
             Dim genero = ObtenerValor(row, "genero")
@@ -199,18 +199,18 @@ Public Class ClassSolicitudValidacion
             Dim estaturaRaw = ObtenerValor(row, "estatura")
 
             If String.IsNullOrWhiteSpace(nombre) Then
-                errores.Add(New ValidationError("Dependiente con nombre vacio no es valido.", "bodyDep", 4))
+                errores.Add(CreateSolicitudValidationError("Dependiente con nombre vacio no es valido.", "bodyDep", 4))
                 Exit For
             End If
 
             If String.IsNullOrWhiteSpace(genero) Then
-                errores.Add(New ValidationError("Debe seleccionar genero M/F para cada dependiente registrado.", "bodyDep", 4))
+                errores.Add(CreateSolicitudValidationError("Debe seleccionar genero M/F para cada dependiente registrado.", "bodyDep", 4))
                 Exit For
             End If
 
             Dim parsedFecha As DateTime
             If Not String.IsNullOrWhiteSpace(fecha) AndAlso Not DateTime.TryParseExact(fecha, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, parsedFecha) Then
-                errores.Add(New ValidationError("Fecha de dependiente invalida.", "bodyDep", 4))
+                errores.Add(CreateSolicitudValidationError("Fecha de dependiente invalida.", "bodyDep", 4))
                 Exit For
             End If
 
@@ -218,7 +218,7 @@ Public Class ClassSolicitudValidacion
                 If Not String.IsNullOrWhiteSpace(pesoRaw) Then
                     Dim peso As Decimal
                     If Not Decimal.TryParse(pesoRaw.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, peso) OrElse peso < 5D OrElse peso > 600D Then
-                        errores.Add(New ValidationError("Peso de dependiente invalido.", "bodyDep", 4))
+                        errores.Add(CreateSolicitudValidationError("Peso de dependiente invalido.", "bodyDep", 4))
                         Exit For
                     End If
                 End If
@@ -226,7 +226,7 @@ Public Class ClassSolicitudValidacion
                 If Not String.IsNullOrWhiteSpace(estaturaRaw) Then
                     Dim estatura As Decimal
                     If Not Decimal.TryParse(estaturaRaw.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, estatura) OrElse estatura < 0.3D OrElse estatura > 2.5D Then
-                        errores.Add(New ValidationError("Estatura de dependiente invalida.", "bodyDep", 4))
+                        errores.Add(CreateSolicitudValidationError("Estatura de dependiente invalida.", "bodyDep", 4))
                         Exit For
                     End If
                 End If
@@ -295,5 +295,11 @@ Public Class ClassSolicitudValidacion
         End If
 
         Return False
+    End Function
+
+    Private Function CreateSolicitudValidationError(message As String, fieldId As String, stepNumber As Integer) As SolicitudValidationError
+        Dim err As New SolicitudValidationError(message, fieldId)
+        err.StepNumber = stepNumber
+        Return err
     End Function
 End Class

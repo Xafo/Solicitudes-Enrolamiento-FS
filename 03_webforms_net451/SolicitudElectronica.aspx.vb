@@ -129,7 +129,7 @@ Partial Class SolicitudElectronica
         Return dto
     End Function
 
-    Private Sub MostrarPrimerError(errores As List(Of ValidationError))
+    Private Sub MostrarPrimerError(errores As List(Of SolicitudValidationError))
         Dim first = errores(0)
         lblMensaje.Text = first.Message
         lblMensaje.CssClass = "message error"
@@ -141,7 +141,7 @@ Partial Class SolicitudElectronica
         Dim serializer As New JavaScriptSerializer()
         Dim fieldIds = errores.Select(Function(x) x.FieldId).Distinct().ToArray()
         Dim serializedFields = serializer.Serialize(fieldIds)
-        Dim script = String.Format("goToStepAndFocus({0}, '{1}', {2});", first.Step, first.FieldId, serializedFields)
+        Dim script = String.Format("goToStepAndFocus({0}, '{1}', {2});", first.StepNumber, first.FieldId, serializedFields)
         ScriptManager.RegisterStartupScript(Me, Me.GetType(), "focus-error", script, True)
     End Sub
 
