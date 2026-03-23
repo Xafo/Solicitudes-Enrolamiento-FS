@@ -157,6 +157,7 @@
 
                 <div class="card">
                     <h3>Beneficiarios del seguro de vida</h3>
+                    <div class="table-wrap">
                     <table class="table-grid">
                         <thead>
                             <tr>
@@ -169,6 +170,7 @@
                         </thead>
                         <tbody id="bodyVida"></tbody>
                     </table>
+                    </div>
                     <div class="row-actions">
                         <button type="button" id="btnAddVida" class="btn light small">Agregar beneficiario vida</button>
                     </div>
@@ -177,6 +179,7 @@
 
                 <div class="card">
                     <h3>Beneficiarios de contingencia</h3>
+                    <div class="table-wrap">
                     <table class="table-grid">
                         <thead>
                             <tr>
@@ -189,6 +192,7 @@
                         </thead>
                         <tbody id="bodyCont"></tbody>
                     </table>
+                    </div>
                     <div class="row-actions">
                         <button type="button" id="btnAddCont" class="btn light small">Agregar beneficiario contingencia</button>
                     </div>
@@ -197,7 +201,8 @@
 
                 <div class="card" id="cardDependientes">
                     <h3>Dependientes economicos</h3>
-                    <table class="table-grid">
+                    <div class="table-wrap">
+                    <table class="table-grid table-dependientes">
                         <thead>
                             <tr>
                                 <th>Nombre completo</th>
@@ -211,6 +216,7 @@
                         </thead>
                         <tbody id="bodyDep"></tbody>
                     </table>
+                    </div>
                     <div class="row-actions">
                         <button type="button" id="btnAddDep" class="btn light small">Agregar dependiente</button>
                     </div>
@@ -234,14 +240,30 @@
                 <div class="card" id="saludLargaBlock">
                     <h3>Cuestionario largo (63/64)</h3>
                     <div class="grid one-col">
-                        <div class="field"><label>1. Enfermedades o trastornos previos</label><asp:DropDownList ID="ddlSaludLarga1" runat="server" CssClass="input" /></div>
-                        <div class="field"><label>2. Intervenciones o accidentes graves</label><asp:DropDownList ID="ddlSaludLarga2" runat="server" CssClass="input" /></div>
-                        <div class="field"><label>3. Tratamiento por otro medico</label><asp:DropDownList ID="ddlSaludLarga3" runat="server" CssClass="input" /></div>
-                        <div class="field"><label>4. Preguntas de salud femenina</label><asp:DropDownList ID="ddlSaludLarga4" runat="server" CssClass="input" /></div>
-                        <div class="field"><label>5. Antecedentes Covid-19</label><asp:DropDownList ID="ddlSaludLarga5" runat="server" CssClass="input" /></div>
-                        <div class="field"><label>Detalle respuestas afirmativas <span class="help" title="Si responde Si en salud, debe completar detalle.">?</span></label><asp:TextBox ID="txtSaludLargaDetalle" runat="server" CssClass="input" TextMode="MultiLine" Rows="4" MaxLength="1800" /></div>
+                        <div id="saludLargaPreguntas"></div>
                         <div class="field"><label>Esta tomando medicamentos en la actualidad?</label><asp:DropDownList ID="ddlMedicamentos" runat="server" CssClass="input" /></div>
-                        <div class="field"><label>Detalle de medicamentos <span class="help" title="Si indica que toma medicamentos, debe agregar detalle.">?</span></label><asp:TextBox ID="txtMedicamentosDetalle" runat="server" CssClass="input" TextMode="MultiLine" Rows="3" MaxLength="1200" /></div>
+                        <div class="card" id="medicamentosBlock">
+                            <label>Detalle de medicamentos</label>
+                            <div class="table-wrap">
+                                <table class="table-grid table-medicamentos">
+                                    <thead>
+                                        <tr>
+                                            <th>Nombre del asegurado</th>
+                                            <th>Diagnostico</th>
+                                            <th>Nombre del medicamento</th>
+                                            <th>Dosis</th>
+                                            <th>Desde</th>
+                                            <th>Hasta</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="bodyMed"></tbody>
+                                </table>
+                            </div>
+                            <div class="row-actions">
+                                <button type="button" id="btnAddMed" class="btn light small">Agregar medicamento</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -290,6 +312,8 @@
             <asp:HiddenField ID="hfDepJson" runat="server" />
             <asp:HiddenField ID="hfTotalVida" runat="server" />
             <asp:HiddenField ID="hfTotalCont" runat="server" />
+            <asp:HiddenField ID="hfSaludLargaJson" runat="server" />
+            <asp:HiddenField ID="hfMedicamentosJson" runat="server" />
         </main>
     </form>
 </body>

@@ -26,11 +26,6 @@ Partial Class SolicitudElectronica
         CargarLista(ddlSaludCorta2, _catalogos.ObtenerSiNo())
         CargarLista(ddlSaludCorta3, _catalogos.ObtenerSiNo())
         CargarLista(ddlSaludCorta4, _catalogos.ObtenerSiNo())
-        CargarLista(ddlSaludLarga1, _catalogos.ObtenerSiNo())
-        CargarLista(ddlSaludLarga2, _catalogos.ObtenerSiNo())
-        CargarLista(ddlSaludLarga3, _catalogos.ObtenerSiNo())
-        CargarLista(ddlSaludLarga4, _catalogos.ObtenerSiNo())
-        CargarLista(ddlSaludLarga5, _catalogos.ObtenerSiNo())
         CargarLista(ddlMedicamentos, _catalogos.ObtenerSiNo())
         CargarLista(ddlPais, _catalogos.ObtenerPaises())
         CargarLista(ddlDepartamento, _catalogos.ObtenerDepartamentos())
@@ -108,15 +103,10 @@ Partial Class SolicitudElectronica
         dto.SaludCorta4 = ValorSiNo(ddlSaludCorta4.SelectedValue)
         dto.SaludCortaDetalle = SanitizarTexto(txtSaludCortaDetalle.Text, 1200)
 
-        dto.SaludLarga1 = ValorSiNo(ddlSaludLarga1.SelectedValue)
-        dto.SaludLarga2 = ValorSiNo(ddlSaludLarga2.SelectedValue)
-        dto.SaludLarga3 = ValorSiNo(ddlSaludLarga3.SelectedValue)
-        dto.SaludLarga4 = ValorSiNo(ddlSaludLarga4.SelectedValue)
-        dto.SaludLarga5 = ValorSiNo(ddlSaludLarga5.SelectedValue)
-        dto.SaludLargaDetalle = SanitizarTexto(txtSaludLargaDetalle.Text, 1800)
+        dto.SaludLargaJson = SanitizarJson(hfSaludLargaJson.Value)
 
         dto.TomaMedicamentos = ValorSiNo(ddlMedicamentos.SelectedValue)
-        dto.MedicamentosDetalle = SanitizarTexto(txtMedicamentosDetalle.Text, 1200)
+        dto.MedicamentosJson = SanitizarJson(hfMedicamentosJson.Value)
 
         dto.AceptaDeclaracion = chkAceptaDeclaracion.Checked
         dto.FirmaSolicitante = SanitizarTexto(txtFirmaSolicitante.Text, 120)
@@ -167,25 +157,15 @@ Partial Class SolicitudElectronica
             dto.SaludCorta3 = String.Empty
             dto.SaludCorta4 = String.Empty
             dto.SaludCortaDetalle = String.Empty
-            dto.SaludLarga1 = String.Empty
-            dto.SaludLarga2 = String.Empty
-            dto.SaludLarga3 = String.Empty
-            dto.SaludLarga4 = String.Empty
-            dto.SaludLarga5 = String.Empty
-            dto.SaludLargaDetalle = String.Empty
+            dto.SaludLargaJson = "[]"
             dto.TomaMedicamentos = String.Empty
-            dto.MedicamentosDetalle = String.Empty
+            dto.MedicamentosJson = "[]"
         End If
 
         If dto.TipoFormulario = "61" OrElse dto.TipoFormulario = "62" Then
-            dto.SaludLarga1 = String.Empty
-            dto.SaludLarga2 = String.Empty
-            dto.SaludLarga3 = String.Empty
-            dto.SaludLarga4 = String.Empty
-            dto.SaludLarga5 = String.Empty
-            dto.SaludLargaDetalle = String.Empty
+            dto.SaludLargaJson = "[]"
             dto.TomaMedicamentos = String.Empty
-            dto.MedicamentosDetalle = String.Empty
+            dto.MedicamentosJson = "[]"
             dto.DependientesJson = "[]"
         End If
 

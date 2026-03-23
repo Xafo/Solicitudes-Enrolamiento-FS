@@ -39,15 +39,10 @@ Public Class SolicitudFormularioDto
     Public Property SaludCorta4 As String
     Public Property SaludCortaDetalle As String
 
-    Public Property SaludLarga1 As String
-    Public Property SaludLarga2 As String
-    Public Property SaludLarga3 As String
-    Public Property SaludLarga4 As String
-    Public Property SaludLarga5 As String
-    Public Property SaludLargaDetalle As String
+    Public Property SaludLargaJson As String
 
     Public Property TomaMedicamentos As String
-    Public Property MedicamentosDetalle As String
+    Public Property MedicamentosJson As String
 
     Public Property AceptaDeclaracion As Boolean
     Public Property FirmaSolicitante As String
