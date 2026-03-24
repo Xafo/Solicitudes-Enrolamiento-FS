@@ -248,6 +248,17 @@ body {
     border-top: 1px dashed #c7d3e8;
 }
 
+.mfa-card {
+    margin-top: 16px;
+    background: #f8fbff;
+}
+
+.mfa-channels {
+    margin: 4px 0 12px;
+    color: #44526e;
+    font-weight: 600;
+}
+
 .table-grid th {
     text-align: left;
     background: #f3f6fb;

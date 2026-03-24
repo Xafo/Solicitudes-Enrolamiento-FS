@@ -17,6 +17,7 @@ Public Class SolicitudFormularioDto
     Public Property PesoLibras As Decimal
     Public Property CargoDesempena As String
     Public Property SueldoMensual As Decimal
+    Public Property CelularMfa As String
 
     Public Property Pais As String
     Public Property Departamento As String
@@ -42,7 +43,8 @@ Public Class SolicitudFormularioDto
 
     Public Property AceptaDeclaracion As Boolean
     Public Property FirmaSolicitante As String
-    Public Property FirmaPatrono As String
     Public Property FechaFirma As String
     Public Property ObservacionesFinales As String
+    Public Property MfaValidado As Boolean
+    Public Property MfaTxnId As String
 End Class

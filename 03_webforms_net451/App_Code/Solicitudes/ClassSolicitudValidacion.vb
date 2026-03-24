@@ -50,6 +50,11 @@ Public Class ClassSolicitudValidacion
         If dto.PesoLibras < 20D OrElse dto.PesoLibras > 600D Then errores.Add(CreateSolicitudValidationError("Peso debe estar entre 20 y 600 libras.", "txtPesoLibras", 2))
         If String.IsNullOrWhiteSpace(dto.CargoDesempena) Then errores.Add(CreateSolicitudValidationError("Ingrese cargo que desempena.", "txtCargoDesempena", 2))
         If dto.SueldoMensual <= 0D OrElse dto.SueldoMensual > 99999999D Then errores.Add(CreateSolicitudValidationError("Sueldo mensual invalido.", "txtSueldoMensual", 2))
+        If String.IsNullOrWhiteSpace(dto.CelularMfa) Then
+            errores.Add(CreateSolicitudValidationError("Ingrese celular principal para MFA.", "txtCelularMfa", 2))
+        ElseIf Not Regex.IsMatch(dto.CelularMfa, "^[0-9\-\s\+\(\)]{7,20}$") Then
+            errores.Add(CreateSolicitudValidationError("Celular MFA tiene formato invalido.", "txtCelularMfa", 2))
+        End If
     End Sub
 
     Private Sub ValidarPaso3(dto As SolicitudFormularioDto, errores As List(Of SolicitudValidationError))
@@ -144,10 +149,6 @@ Public Class ClassSolicitudValidacion
             errores.Add(CreateSolicitudValidationError("Ingrese firma del solicitante.", "txtFirmaSolicitante", 6))
         End If
 
-        If String.IsNullOrWhiteSpace(dto.FirmaPatrono) Then
-            errores.Add(CreateSolicitudValidationError("Ingrese firma del patrono/contratante.", "txtFirmaPatrono", 6))
-        End If
-
         If String.IsNullOrWhiteSpace(dto.FechaFirma) Then
             errores.Add(CreateSolicitudValidationError("Ingrese fecha de firma.", "txtFechaFirma", 6))
         Else
@@ -155,6 +156,10 @@ Public Class ClassSolicitudValidacion
             If Not DateTime.TryParseExact(dto.FechaFirma, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, parsed) Then
                 errores.Add(CreateSolicitudValidationError("Fecha de firma invalida.", "txtFechaFirma", 6))
             End If
+        End If
+
+        If Not dto.MfaValidado Then
+            errores.Add(CreateSolicitudValidationError("Debe validar OTP MFA para completar la firma electronica.", "txtOtpCodigo", 6))
         End If
     End Sub
 

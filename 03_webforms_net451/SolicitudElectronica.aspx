@@ -110,6 +110,10 @@
                         <label for="txtSueldoMensual">Sueldo mensual <span class="required">*</span></label>
                         <asp:TextBox ID="txtSueldoMensual" runat="server" CssClass="input decimal" MaxLength="18" />
                     </div>
+                    <div class="field">
+                        <label for="txtCelularMfa">Celular principal para MFA <span class="required">*</span></label>
+                        <asp:TextBox ID="txtCelularMfa" runat="server" CssClass="input" MaxLength="20" />
+                    </div>
                 </div>
             </section>
 
@@ -265,7 +269,7 @@
             </section>
 
             <section class="wizard-step" data-step="6">
-                <h2>Consentimiento y firma</h2>
+                <h2>Consentimiento y firma electronica</h2>
 
                 <div class="card">
                     <div class="field">
@@ -279,16 +283,31 @@
                             <asp:TextBox ID="txtFirmaSolicitante" runat="server" CssClass="input" MaxLength="120" />
                         </div>
                         <div class="field">
-                            <label for="txtFirmaPatrono">Firma y sello patrono/contratante (nombre completo) <span class="required">*</span></label>
-                            <asp:TextBox ID="txtFirmaPatrono" runat="server" CssClass="input" MaxLength="120" />
-                        </div>
-                        <div class="field">
                             <label for="txtFechaFirma">Fecha de firma <span class="required">*</span></label>
                             <asp:TextBox ID="txtFechaFirma" runat="server" CssClass="input no-manual-date" TextMode="Date" />
                         </div>
                         <div class="field">
                             <label for="txtObservacionesFinales">Observaciones</label>
                             <asp:TextBox ID="txtObservacionesFinales" runat="server" CssClass="input" TextMode="MultiLine" Rows="3" />
+                        </div>
+                    </div>
+
+                    <div class="card mfa-card">
+                        <h3>Validacion MFA para firma electronica <span class="help" title="La validacion MFA realizada en este proceso funcionara como firma digital/electronica de conformidad con la normativa aplicable en Honduras.">?</span></h3>
+                        <p class="mfa-channels">Canales: <asp:Literal ID="litMfaChannels" runat="server" /></p>
+                        <div class="grid two-col">
+                            <div class="field">
+                                <label for="txtOtpCodigo">Codigo OTP <span class="required">*</span></label>
+                                <asp:TextBox ID="txtOtpCodigo" runat="server" CssClass="input" MaxLength="6" />
+                            </div>
+                            <div class="field">
+                                <label>Estado MFA</label>
+                                <asp:Label ID="lblMfaStatus" runat="server" CssClass="message" />
+                            </div>
+                        </div>
+                        <div class="actions">
+                            <asp:Button ID="btnEnviarOtp" runat="server" CssClass="btn light" Text="Enviar OTP" />
+                            <asp:Button ID="btnValidarOtp" runat="server" CssClass="btn primary" Text="Validar OTP" />
                         </div>
                     </div>
                 </div>
@@ -311,6 +330,8 @@
             <asp:HiddenField ID="hfSaludLargaJson" runat="server" />
             <asp:HiddenField ID="hfMedicamentosJson" runat="server" />
             <asp:HiddenField ID="hfSaludCortaJson" runat="server" />
+            <asp:HiddenField ID="hfMfaValidado" runat="server" Value="N" />
+            <asp:HiddenField ID="hfMfaTxnId" runat="server" />
         </main>
     </form>
 </body>
