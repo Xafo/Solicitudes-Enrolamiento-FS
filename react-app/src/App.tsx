@@ -137,18 +137,18 @@ const shortQuestions = [
 ]
 
 const longQuestions = [
-  { id: 'q1a', text: '¿Ha padecido enfermedades del corazón?' },
-  { id: 'q1b', text: '¿Ha padecido hipertensión arterial o circulatoria?' },
-  { id: 'q1c', text: '¿Ha padecido diabetes o problemas endocrinos?' },
-  { id: 'q1d', text: '¿Ha padecido enfermedades respiratorias crónicas?' },
-  { id: 'q1e', text: '¿Ha padecido trastornos neurológicos?' },
-  { id: 'q1f', text: '¿Ha padecido enfermedades renales o urinarias?' },
-  { id: 'q1g', text: '¿Ha padecido enfermedades digestivas crónicas?' },
-  { id: 'q1h', text: '¿Ha padecido enfermedades autoinmunes?' },
-  { id: 'q1i', text: '¿Ha padecido cáncer o tumores?' },
-  { id: 'q1j', text: '¿Ha padecido enfermedades de la sangre?' },
-  { id: 'q1k', text: '¿Ha padecido trastornos musculoesqueléticos graves?' },
-  { id: 'q1l', text: '¿Ha padecido otra enfermedad relevante?' },
+  { id: 'q1a', text: '¿Enfermedades del corazón?' },
+  { id: 'q1b', text: '¿Hipertensión arterial o circulatoria?' },
+  { id: 'q1c', text: '¿Diabetes o problemas endocrinos?' },
+  { id: 'q1d', text: '¿Enfermedades respiratorias crónicas?' },
+  { id: 'q1e', text: '¿Trastornos neurológicos?' },
+  { id: 'q1f', text: '¿Enfermedades renales o urinarias?' },
+  { id: 'q1g', text: '¿Enfermedades digestivas crónicas?' },
+  { id: 'q1h', text: '¿Enfermedades autoinmunes?' },
+  { id: 'q1i', text: '¿Cáncer o tumores?' },
+  { id: 'q1j', text: '¿Enfermedades de la sangre?' },
+  { id: 'q1k', text: '¿Trastornos musculoesqueléticos graves?' },
+  { id: 'q1l', text: '¿otra enfermedad relevante?' },
   { id: 'q2a', text: '¿Ha sido hospitalizado en los últimos 5 años?' },
   { id: 'q2b', text: '¿Se ha sometido a cirugías en los últimos 5 años?' },
   { id: 'q3', text: '¿Está actualmente bajo evaluación médica?' },
@@ -902,7 +902,7 @@ function App() {
                     <div className="grid two-col">
                       <div className="field"><label>Especifique enfermedad</label><input className="input" value={row.enfermedad} onChange={(event) => updateQuestion(shortHealthRows, setShortHealthRows, row.id, 'enfermedad', event.target.value)} /></div>
                       <div className="field"><label>Nombre y dirección del médico tratante</label><input className="input" value={row.medico} onChange={(event) => updateQuestion(shortHealthRows, setShortHealthRows, row.id, 'medico', event.target.value)} /></div>
-                      <div className="field"><label>¿Cuándo?, duración, secuela?</label><input className="input" value={row.cuando} onChange={(event) => updateQuestion(shortHealthRows, setShortHealthRows, row.id, 'cuando', event.target.value)} /></div>
+                      <div className="field"><label>¿Cuándo, duración, secuela?</label><input className="input" value={row.cuando} onChange={(event) => updateQuestion(shortHealthRows, setShortHealthRows, row.id, 'cuando', event.target.value)} /></div>
                       <div className="field"><label>Paciente/asegurado</label><input className="input" value={row.paciente} onChange={(event) => updateQuestion(shortHealthRows, setShortHealthRows, row.id, 'paciente', event.target.value)} /></div>
                     </div>
                   </div>
@@ -912,7 +912,7 @@ function App() {
           </div>
 
           <div className={`card${isLongHealthForm(formData.tipoFormulario) ? '' : ' is-hidden'}`} id="saludLargaBlock">
-            <h3>Cuestionario largo (63/64)</h3>
+            <h3>Ha tenido alguna vez o tiene usted, su cónyuge o sus hijos; alguna de las enfermedades o trastornos siguientes:</h3>
             <div id="saludLargaPreguntas" className={fieldErrorSet.has('saludLargaPreguntas') ? 'field-error-area' : ''}>
               {visibleLongQuestions.map((question) => {
                 const row = longHealthRows.find((r) => r.id === question.id)
@@ -928,7 +928,7 @@ function App() {
                       <div className="grid two-col">
                         <div className="field"><label>Especifique enfermedad</label><input className="input" value={row?.enfermedad || ''} onChange={(event) => updateQuestion(longHealthRows, setLongHealthRows, question.id, 'enfermedad', event.target.value)} /></div>
                         <div className="field"><label>Nombre y dirección del médico tratante</label><input className="input" value={row?.medico || ''} onChange={(event) => updateQuestion(longHealthRows, setLongHealthRows, question.id, 'medico', event.target.value)} /></div>
-                        <div className="field"><label>¿Cuándo?, duración, secuela?</label><input className="input" value={row?.cuando || ''} onChange={(event) => updateQuestion(longHealthRows, setLongHealthRows, question.id, 'cuando', event.target.value)} /></div>
+                        <div className="field"><label>¿Cuándo, duración, secuela?</label><input className="input" value={row?.cuando || ''} onChange={(event) => updateQuestion(longHealthRows, setLongHealthRows, question.id, 'cuando', event.target.value)} /></div>
                         <div className="field"><label>Paciente/asegurado</label><input className="input" value={row?.paciente || ''} onChange={(event) => updateQuestion(longHealthRows, setLongHealthRows, question.id, 'paciente', event.target.value)} /></div>
                       </div>
                     </div>
