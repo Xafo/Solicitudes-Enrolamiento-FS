@@ -915,7 +915,7 @@ function App() {
             <div id="saludCortaPreguntas" className={fieldErrorSet.has('saludCortaPreguntas') ? 'field-error-area' : ''}>
               {shortHealthRows.map((row) => (
                 <div key={row.id} className="question-card" data-question-id={row.id}>
-                  <div className="field">
+                  <div className="field question-row">
                     <label>{row.text}</label>
                     <ToggleControl value={row.answer} onChange={(val) => updateQuestion(shortHealthRows, setShortHealthRows, row.id, 'answer', val)} />
                   </div>
@@ -939,7 +939,7 @@ function App() {
                 const row = longHealthRows.find((r) => r.id === question.id)
                 return (
                   <div key={question.id} className="question-card" data-question-id={question.id}>
-                    <div className="field">
+                    <div className="field question-row">
                       <label>{question.text}</label>
                       <ToggleControl value={row?.answer || ''} onChange={(val) => updateQuestion(longHealthRows, setLongHealthRows, question.id, 'answer', val)} />
                     </div>

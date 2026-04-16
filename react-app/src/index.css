@@ -255,6 +255,18 @@ textarea.input {
   background: #fafcff;
 }
 
+.question-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+}
+
+.question-row label {
+  flex: 1;
+  margin: 0;
+}
+
 .question-detail {
   margin-top: 10px;
   padding-top: 10px;
@@ -269,6 +281,7 @@ textarea.input {
 .toggle-control {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 10px;
 }
 
@@ -277,6 +290,7 @@ textarea.input {
   width: 60px;
   height: 32px;
   cursor: pointer;
+  flex-shrink: 0;
 }
 
 .toggle-switch input {
@@ -331,6 +345,17 @@ textarea.input {
 
 .toggle-labels span:first-child {
   text-align: right;
+}
+
+@media (max-width: 480px) {
+  .toggle-control {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .toggle-switch {
+    align-self: flex-end;
+  }
 }
 
 .field-error-area {
