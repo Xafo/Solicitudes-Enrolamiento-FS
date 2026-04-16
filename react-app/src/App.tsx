@@ -25,35 +25,30 @@ function App() {
 
   return (
     <form id="form1" onSubmit={handleSubmit}>
-      <main className="min-h-screen bg-gradient-to-b from-slate-100 to-slate-200 py-6 px-4">
-        <div className="max-w-5xl mx-auto bg-white rounded-2xl shadow-lg p-6">
-          <header className="mb-6 pb-4 border-b border-gray-200">
-            <h1 className="text-2xl font-bold text-ficohsa-blue m-0">Solicitud electrónica</h1>
-            <p className="text-gray-500 text-sm mt-1 mb-0">Canal digital - validaciones finales</p>
+      <main className="min-h-screen py-6 px-4">
+        <div className="container">
+          <header className="header pb-4 border-b border-border-light">
+            <h1>Solicitud electrónica</h1>
+            <p>Canal digital - validaciones finales</p>
           </header>
 
           {message && (
-            <div
-              className={`
-                mb-4 p-3 rounded-lg font-semibold text-sm
-                ${messageClass === 'ok' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}
-              `}
-            >
+            <div className={`message ${messageClass === 'ok' ? 'ok' : 'error'}`}>
               {message}
             </div>
           )}
 
           {errors.length > 0 && (
-            <ul className="mb-4 p-3 rounded-lg bg-red-50 border border-red-200 text-sm">
+            <ul className="error-list">
               {Array.from(new Set(errors.map((error) => error.message))).map((error) => (
-                <li key={error} className="text-red-700 my-1">{error}</li>
+                <li key={error}>{error}</li>
               ))}
             </ul>
           )}
 
           <WizardContainer />
 
-          <div className="mt-6 pt-4 border-t border-gray-200">
+          <div className="wizard-nav">
             <Button type="submit" variant="primary">
               Enviar
             </Button>

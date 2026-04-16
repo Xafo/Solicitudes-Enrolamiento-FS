@@ -8,9 +8,9 @@ export function Step3_Direccion() {
   const hasError = (fieldId: string) => errors.some((e) => e.fieldId === fieldId)
 
   return (
-    <section className="border border-gray-200 rounded-xl p-6 mb-4">
-      <h2 className="text-lg font-semibold text-ficohsa-blue mb-4">Dirección del asegurado</h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <>
+      <h2>Dirección del asegurado</h2>
+      <div className="two-col">
         <SelectField
           label="País"
           options={paises}
@@ -72,6 +72,6 @@ export function Step3_Direccion() {
           error={hasError('txtEmail')}
         />
       </div>
-    </section>
+    </>
   )
 }

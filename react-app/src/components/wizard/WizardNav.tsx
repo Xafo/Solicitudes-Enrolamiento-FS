@@ -9,7 +9,7 @@ export function WizardNav() {
   const isLast = step === visibleSteps[visibleSteps.length - 1]
 
   return (
-    <div className="flex gap-2 mt-4">
+    <div className="wizard-nav">
       <Button
         variant="light"
         onClick={goPrev}

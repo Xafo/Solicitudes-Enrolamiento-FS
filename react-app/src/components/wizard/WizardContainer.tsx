@@ -7,25 +7,27 @@ import { Step4_Beneficiarios } from './Step4_Beneficiarios'
 import { Step5_Salud } from './Step5_Salud'
 import { Step6_Consentimiento } from './Step6_Consentimiento'
 import { WizardNav } from './WizardNav'
-
+import type { Step } from '../../types'
 
 export function WizardContainer() {
   const { step } = useFormStore()
 
   const renderStep = () => {
+    const stepClass = (s: Step) => `wizard-step${step === s ? ' active' : ''}`
+
     switch (step) {
       case 1:
-        return <Step1_Poliza />
+        return <div className={stepClass(1)}><Step1_Poliza /></div>
       case 2:
-        return <Step2_Asegurado />
+        return <div className={stepClass(2)}><Step2_Asegurado /></div>
       case 3:
-        return <Step3_Direccion />
+        return <div className={stepClass(3)}><Step3_Direccion /></div>
       case 4:
-        return <Step4_Beneficiarios />
+        return <div className={stepClass(4)}><Step4_Beneficiarios /></div>
       case 5:
-        return <Step5_Salud />
+        return <div className={stepClass(5)}><Step5_Salud /></div>
       case 6:
-        return <Step6_Consentimiento />
+        return <div className={stepClass(6)}><Step6_Consentimiento /></div>
       default:
         return null
     }

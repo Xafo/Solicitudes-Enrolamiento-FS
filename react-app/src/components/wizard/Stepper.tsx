@@ -15,7 +15,7 @@ export function Stepper() {
   const visibleSteps = getVisibleSteps()
 
   return (
-    <ul className="grid grid-cols-3 md:grid-cols-6 gap-2 list-none p-0 mb-4">
+    <ul className="stepper">
       {visibleSteps.map((tabStep) => {
         const isActive = step === tabStep
         return (
@@ -23,13 +23,7 @@ export function Stepper() {
             key={tabStep}
             data-step={tabStep}
             onClick={() => setStep(tabStep)}
-            className={`
-              border rounded-xl p-2.5 text-center font-semibold text-sm cursor-pointer
-              transition-all
-              ${isActive 
-                ? 'border-ficohsa-blue bg-ficohsa-blue text-white shadow-md' 
-                : 'border-gray-300 bg-white text-gray-700 hover:border-ficohsa-blue/50'}
-            `}
+            className={isActive ? 'active' : ''}
           >
             {stepTitles[tabStep]}
           </li>
