@@ -86,7 +86,7 @@ const generos = ['M', 'F']
 
 const tiposFormulario = [
   { value: '', label: 'Seleccione...' },
-  { value: '101', label: 'SPN-F.GTP-101' },
+  { value: '101', label: 'SPN-F.GTP-101 ' },
   { value: '61', label: 'SPN-F.GTP-61' },
   { value: '62', label: 'SPN-F.GTP-62' },
   { value: '63', label: 'SPN-F.GTP-63' },
