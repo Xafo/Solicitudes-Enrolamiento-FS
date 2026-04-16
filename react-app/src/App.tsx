@@ -10,18 +10,17 @@ function ToggleControl({
   onChange: (val: string) => void
 }) {
   return (
-    <div className="toggle-control">
-      <span style={{ fontSize: '13px', color: '#5b667d', fontWeight: '500' }}>No</span>
-      <label className="toggle-switch">
-        <input
-          type="checkbox"
-          checked={value === 'SI'}
-          onChange={(e) => onChange(e.target.checked ? 'SI' : 'NO')}
-        />
-        <span className="toggle-slider"></span>
-      </label>
-      <span style={{ fontSize: '13px', color: value === 'SI' ? '#002f6c' : '#5b667d', fontWeight: value === 'SI' ? '600' : '500' }}>Sí</span>
-    </div>
+    <label className="toggle-switch">
+      <input
+        type="checkbox"
+        checked={value === 'SI'}
+        onChange={(e) => onChange(e.target.checked ? 'SI' : 'NO')}
+      />
+      <span className="toggle-slider">
+        <span className="label-no">NO</span>
+        <span className="label-si">SÍ</span>
+      </span>
+    </label>
   )
 }
 
