@@ -2,29 +2,32 @@ import { useMemo, useState, type Dispatch, type FormEventHandler, type KeyboardE
 
 type Step = 1 | 2 | 3 | 4 | 5 | 6
 
-function SegmentedControl({
+function SliderControl({
   value,
   onChange,
 }: {
   value: string
   onChange: (val: string) => void
 }) {
+  const sliderValue = value === 'SI' ? 1 : value === 'NO' ? 0 : 0.5
+
   return (
-    <div className="segmented-control">
-      <button
-        type="button"
-        className={value === 'NO' ? 'selected' : ''}
-        onClick={() => onChange('NO')}
-      >
-        No
-      </button>
-      <button
-        type="button"
-        className={value === 'SI' ? 'selected' : ''}
-        onClick={() => onChange('SI')}
-      >
-        Sí
-      </button>
+    <div className="slider-control">
+      <span style={{ fontSize: '13px', color: '#5b667d', minWidth: '24px' }}>No</span>
+      <div className="slider-track">
+        <input
+          type="range"
+          min="0"
+          max="1"
+          step="1"
+          value={sliderValue}
+          onChange={(e) => {
+            const val = e.target.value === '1' ? 'SI' : 'NO'
+            onChange(val)
+          }}
+        />
+      </div>
+      <span style={{ fontSize: '13px', color: '#5b667d', minWidth: '24px' }}>Sí</span>
     </div>
   )
 }
@@ -921,7 +924,7 @@ function App() {
                 <div key={row.id} className="question-card" data-question-id={row.id}>
                   <div className="field">
                     <label>{row.text}</label>
-                    <SegmentedControl value={row.answer} onChange={(val) => updateQuestion(shortHealthRows, setShortHealthRows, row.id, 'answer', val)} />
+                    <SliderControl value={row.answer} onChange={(val) => updateQuestion(shortHealthRows, setShortHealthRows, row.id, 'answer', val)} />
                   </div>
                   <div className={`question-detail${row.answer === 'SI' ? '' : ' is-hidden'}`}>
                     <div className="grid two-col">
@@ -945,7 +948,7 @@ function App() {
                   <div key={question.id} className="question-card" data-question-id={question.id}>
                     <div className="field">
                       <label>{question.text}</label>
-                      <SegmentedControl value={row?.answer || ''} onChange={(val) => updateQuestion(longHealthRows, setLongHealthRows, question.id, 'answer', val)} />
+                      <SliderControl value={row?.answer || ''} onChange={(val) => updateQuestion(longHealthRows, setLongHealthRows, question.id, 'answer', val)} />
                     </div>
                     <div className={`question-detail${row?.answer === 'SI' ? '' : ' is-hidden'}`}>
                       <div className="grid two-col">
