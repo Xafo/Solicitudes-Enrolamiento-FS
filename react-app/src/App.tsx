@@ -2,32 +2,25 @@ import { useMemo, useState, type Dispatch, type FormEventHandler, type KeyboardE
 
 type Step = 1 | 2 | 3 | 4 | 5 | 6
 
-function SliderControl({
+function ToggleControl({
   value,
   onChange,
 }: {
   value: string
   onChange: (val: string) => void
 }) {
-  const sliderValue = value === 'SI' ? 1 : value === 'NO' ? 0 : 0.5
-
   return (
-    <div className="slider-control">
-      <span style={{ fontSize: '13px', color: '#5b667d', minWidth: '24px' }}>No</span>
-      <div className="slider-track">
+    <div className="toggle-control">
+      <span style={{ fontSize: '13px', color: '#5b667d', fontWeight: '500' }}>No</span>
+      <label className="toggle-switch">
         <input
-          type="range"
-          min="0"
-          max="1"
-          step="1"
-          value={sliderValue}
-          onChange={(e) => {
-            const val = e.target.value === '1' ? 'SI' : 'NO'
-            onChange(val)
-          }}
+          type="checkbox"
+          checked={value === 'SI'}
+          onChange={(e) => onChange(e.target.checked ? 'SI' : 'NO')}
         />
-      </div>
-      <span style={{ fontSize: '13px', color: '#5b667d', minWidth: '24px' }}>Sí</span>
+        <span className="toggle-slider"></span>
+      </label>
+      <span style={{ fontSize: '13px', color: value === 'SI' ? '#002f6c' : '#5b667d', fontWeight: value === 'SI' ? '600' : '500' }}>Sí</span>
     </div>
   )
 }
@@ -924,7 +917,7 @@ function App() {
                 <div key={row.id} className="question-card" data-question-id={row.id}>
                   <div className="field">
                     <label>{row.text}</label>
-                    <SliderControl value={row.answer} onChange={(val) => updateQuestion(shortHealthRows, setShortHealthRows, row.id, 'answer', val)} />
+                    <ToggleControl value={row.answer} onChange={(val) => updateQuestion(shortHealthRows, setShortHealthRows, row.id, 'answer', val)} />
                   </div>
                   <div className={`question-detail${row.answer === 'SI' ? '' : ' is-hidden'}`}>
                     <div className="grid two-col">
@@ -948,7 +941,7 @@ function App() {
                   <div key={question.id} className="question-card" data-question-id={question.id}>
                     <div className="field">
                       <label>{question.text}</label>
-                      <SliderControl value={row?.answer || ''} onChange={(val) => updateQuestion(longHealthRows, setLongHealthRows, question.id, 'answer', val)} />
+                      <ToggleControl value={row?.answer || ''} onChange={(val) => updateQuestion(longHealthRows, setLongHealthRows, question.id, 'answer', val)} />
                     </div>
                     <div className={`question-detail${row?.answer === 'SI' ? '' : ' is-hidden'}`}>
                       <div className="grid two-col">
