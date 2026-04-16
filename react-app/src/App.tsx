@@ -28,6 +28,53 @@ function ToggleControl({
   )
 }
 
+function getNombreAsegurado(formData: FormData): string {
+  const nombre = [formData.primerNombre, formData.segundoNombre].filter(Boolean).join(' ')
+  const apellido = [formData.primerApellido, formData.segundoApellido].filter(Boolean).join(' ')
+  return [nombre, apellido].filter(Boolean).join(' ') || 'Asegurado'
+}
+
+function getOpcionesPaciente(formData: FormData, depRows: DepRow[]): { value: string; label: string }[] {
+  const opciones: { value: string; label: string }[] = []
+  
+  const nombreAsegurado = getNombreAsegurado(formData)
+  opciones.push({ value: nombreAsegurado, label: nombreAsegurado })
+  
+  depRows.forEach((dep) => {
+    if (dep.nombre.trim()) {
+      opciones.push({ value: dep.nombre.trim(), label: dep.nombre.trim() })
+    }
+  })
+  
+  return opciones
+}
+
+function PacienteSelect({
+  value,
+  onChange,
+  opciones,
+  disabled,
+}: {
+  value: string
+  onChange: (val: string) => void
+  opciones: { value: string; label: string }[]
+  disabled?: boolean
+}) {
+  return (
+    <select 
+      className="input" 
+      value={value} 
+      onChange={(e) => onChange(e.target.value)}
+      disabled={disabled}
+    >
+      <option value="">Seleccione...</option>
+      {opciones.map((opt) => (
+        <option key={opt.value} value={opt.value}>{opt.label}</option>
+      ))}
+    </select>
+  )
+}
+
 type DynamicRow = {
   id: string
   nombre: string
@@ -916,22 +963,43 @@ function App() {
           <div className={`card${isShortHealthForm(formData.tipoFormulario) ? '' : ' is-hidden'}`} id="saludCortaBlock">
             <h3>Cuestionario corto (61/62)</h3>
             <div id="saludCortaPreguntas" className={fieldErrorSet.has('saludCortaPreguntas') ? 'field-error-area' : ''}>
-              {shortHealthRows.map((row) => (
-                <div key={row.id} className="question-card" data-question-id={row.id}>
-                  <div className="field question-row">
-                    <label>{row.text}</label>
-                    <ToggleControl value={row.answer} onChange={(val) => updateQuestion(shortHealthRows, setShortHealthRows, row.id, 'answer', val)} />
-                  </div>
-                  <div className={`question-detail${row.answer === 'SI' ? '' : ' is-hidden'}`}>
-                    <div className="grid two-col">
-                      <div className="field"><label>Especifique enfermedad</label><input className="input" value={row.enfermedad} onChange={(event) => updateQuestion(shortHealthRows, setShortHealthRows, row.id, 'enfermedad', event.target.value)} /></div>
-                      <div className="field"><label>Nombre y dirección del médico tratante</label><input className="input" value={row.medico} onChange={(event) => updateQuestion(shortHealthRows, setShortHealthRows, row.id, 'medico', event.target.value)} /></div>
-                      <div className="field"><label>¿Cuándo, duración, secuela?</label><input className="input" value={row.cuando} onChange={(event) => updateQuestion(shortHealthRows, setShortHealthRows, row.id, 'cuando', event.target.value)} /></div>
-                      <div className="field"><label>Paciente/asegurado</label><input className="input" value={row.paciente} onChange={(event) => updateQuestion(shortHealthRows, setShortHealthRows, row.id, 'paciente', event.target.value)} /></div>
+              {shortHealthRows.map((row) => {
+                const opcionesPaciente = getOpcionesPaciente(formData, depRows)
+                const handleAnswerChange = (val: string) => {
+                  if (val === 'SI') {
+                    const nombreAsegurado = getNombreAsegurado(formData)
+                    setShortHealthRows(shortHealthRows.map(r => 
+                      r.id === row.id ? { ...r, answer: val, paciente: nombreAsegurado } : r
+                    ))
+                  } else {
+                    updateQuestion(shortHealthRows, setShortHealthRows, row.id, 'answer', val)
+                  }
+                }
+                return (
+                  <div key={row.id} className="question-card" data-question-id={row.id}>
+                    <div className="field question-row">
+                      <label>{row.text}</label>
+                      <ToggleControl value={row.answer} onChange={handleAnswerChange} />
+                    </div>
+                    <div className={`question-detail${row.answer === 'SI' ? '' : ' is-hidden'}`}>
+                      <div className="grid two-col">
+                        <div className="field"><label>Especifique enfermedad</label><input className="input" value={row.enfermedad} onChange={(event) => updateQuestion(shortHealthRows, setShortHealthRows, row.id, 'enfermedad', event.target.value)} /></div>
+                        <div className="field"><label>Nombre y dirección del médico tratante</label><input className="input" value={row.medico} onChange={(event) => updateQuestion(shortHealthRows, setShortHealthRows, row.id, 'medico', event.target.value)} /></div>
+                        <div className="field"><label>¿Cuándo, duración, secuela?</label><input className="input" value={row.cuando} onChange={(event) => updateQuestion(shortHealthRows, setShortHealthRows, row.id, 'cuando', event.target.value)} /></div>
+                        <div className="field">
+                          <label>Paciente/asegurado</label>
+                          <PacienteSelect 
+                            value={row.paciente} 
+                            onChange={(val) => updateQuestion(shortHealthRows, setShortHealthRows, row.id, 'paciente', val)}
+                            opciones={opcionesPaciente}
+                            disabled={row.answer !== 'SI'}
+                          />
+                        </div>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                )
+              })}
             </div>
           </div>
 
@@ -940,18 +1008,37 @@ function App() {
             <div id="saludLargaPreguntas" className={fieldErrorSet.has('saludLargaPreguntas') ? 'field-error-area' : ''}>
               {visibleLongQuestions.map((question) => {
                 const row = longHealthRows.find((r) => r.id === question.id)
+                const opcionesPaciente = getOpcionesPaciente(formData, depRows)
+                const handleAnswerChange = (val: string) => {
+                  if (val === 'SI') {
+                    const nombreAsegurado = getNombreAsegurado(formData)
+                    setLongHealthRows(longHealthRows.map(r => 
+                      r.id === question.id ? { ...r, answer: val, paciente: nombreAsegurado } : r
+                    ))
+                  } else {
+                    updateQuestion(longHealthRows, setLongHealthRows, question.id, 'answer', val)
+                  }
+                }
                 return (
                   <div key={question.id} className="question-card" data-question-id={question.id}>
                     <div className="field question-row">
                       <label>{question.text}</label>
-                      <ToggleControl value={row?.answer || ''} onChange={(val) => updateQuestion(longHealthRows, setLongHealthRows, question.id, 'answer', val)} />
+                      <ToggleControl value={row?.answer || ''} onChange={handleAnswerChange} />
                     </div>
                     <div className={`question-detail${row?.answer === 'SI' ? '' : ' is-hidden'}`}>
                       <div className="grid two-col">
                         <div className="field"><label>Especifique enfermedad</label><input className="input" value={row?.enfermedad || ''} onChange={(event) => updateQuestion(longHealthRows, setLongHealthRows, question.id, 'enfermedad', event.target.value)} /></div>
                         <div className="field"><label>Nombre y dirección del médico tratante</label><input className="input" value={row?.medico || ''} onChange={(event) => updateQuestion(longHealthRows, setLongHealthRows, question.id, 'medico', event.target.value)} /></div>
                         <div className="field"><label>¿Cuándo, duración, secuela?</label><input className="input" value={row?.cuando || ''} onChange={(event) => updateQuestion(longHealthRows, setLongHealthRows, question.id, 'cuando', event.target.value)} /></div>
-                        <div className="field"><label>Paciente/asegurado</label><input className="input" value={row?.paciente || ''} onChange={(event) => updateQuestion(longHealthRows, setLongHealthRows, question.id, 'paciente', event.target.value)} /></div>
+                        <div className="field">
+                          <label>Paciente/asegurado</label>
+                          <PacienteSelect 
+                            value={row?.paciente || ''} 
+                            onChange={(val) => updateQuestion(longHealthRows, setLongHealthRows, question.id, 'paciente', val)}
+                            opciones={opcionesPaciente}
+                            disabled={row?.answer !== 'SI'}
+                          />
+                        </div>
                       </div>
                     </div>
                   </div>
