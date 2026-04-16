@@ -253,6 +253,7 @@ textarea.input {
   padding: 12px;
   margin-bottom: 12px;
   background: #fafcff;
+  text-align: left;
 }
 
 .question-row {
@@ -260,11 +261,14 @@ textarea.input {
   justify-content: space-between;
   align-items: center;
   gap: 16px;
+  text-align: left;
 }
 
 .question-row label {
   flex: 1;
   margin: 0;
+  text-align: left;
+  font-weight: 500;
 }
 
 .question-detail {
