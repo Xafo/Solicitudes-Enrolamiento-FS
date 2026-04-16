@@ -9,18 +9,22 @@ function ToggleControl({
   value: string
   onChange: (val: string) => void
 }) {
+  const isSi = value === 'SI'
   return (
-    <label className="toggle-switch">
-      <input
-        type="checkbox"
-        checked={value === 'SI'}
-        onChange={(e) => onChange(e.target.checked ? 'SI' : 'NO')}
-      />
-      <span className="toggle-slider">
-        <span className="label-no">NO</span>
-        <span className="label-si">SÍ</span>
-      </span>
-    </label>
+    <div className="toggle-control">
+      <span className={`toggle-label${!isSi ? ' active' : ''}`}>NO</span>
+      <div className="toggle-wrapper">
+        <label className="toggle-switch">
+          <input
+            type="checkbox"
+            checked={isSi}
+            onChange={(e) => onChange(e.target.checked ? 'SI' : 'NO')}
+          />
+          <span className="toggle-slider"></span>
+        </label>
+      </div>
+      <span className={`toggle-label${isSi ? ' active' : ''}`}>SÍ</span>
+    </div>
   )
 }
 
