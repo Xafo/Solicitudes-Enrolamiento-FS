@@ -2,6 +2,33 @@ import { useMemo, useState, type Dispatch, type FormEventHandler, type KeyboardE
 
 type Step = 1 | 2 | 3 | 4 | 5 | 6
 
+function SegmentedControl({
+  value,
+  onChange,
+}: {
+  value: string
+  onChange: (val: string) => void
+}) {
+  return (
+    <div className="segmented-control">
+      <button
+        type="button"
+        className={value === 'NO' ? 'selected' : ''}
+        onClick={() => onChange('NO')}
+      >
+        No
+      </button>
+      <button
+        type="button"
+        className={value === 'SI' ? 'selected' : ''}
+        onClick={() => onChange('SI')}
+      >
+        Sí
+      </button>
+    </div>
+  )
+}
+
 type DynamicRow = {
   id: string
   nombre: string
@@ -894,9 +921,7 @@ function App() {
                 <div key={row.id} className="question-card" data-question-id={row.id}>
                   <div className="field">
                     <label>{row.text}</label>
-                    <select className="input q-answer" value={row.answer} onChange={(event) => updateQuestion(shortHealthRows, setShortHealthRows, row.id, 'answer', event.target.value)}>
-                      {siNoOptions.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
-                    </select>
+                    <SegmentedControl value={row.answer} onChange={(val) => updateQuestion(shortHealthRows, setShortHealthRows, row.id, 'answer', val)} />
                   </div>
                   <div className={`question-detail${row.answer === 'SI' ? '' : ' is-hidden'}`}>
                     <div className="grid two-col">
@@ -920,9 +945,7 @@ function App() {
                   <div key={question.id} className="question-card" data-question-id={question.id}>
                     <div className="field">
                       <label>{question.text}</label>
-                      <select className="input q-answer" value={row?.answer || ''} onChange={(event) => updateQuestion(longHealthRows, setLongHealthRows, question.id, 'answer', event.target.value)}>
-                        {siNoOptions.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
-                      </select>
+                      <SegmentedControl value={row?.answer || ''} onChange={(val) => updateQuestion(longHealthRows, setLongHealthRows, question.id, 'answer', val)} />
                     </div>
                     <div className={`question-detail${row?.answer === 'SI' ? '' : ' is-hidden'}`}>
                       <div className="grid two-col">
