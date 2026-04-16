@@ -257,17 +257,17 @@ textarea.input {
 }
 
 .question-row {
-  display: flex;
+  display: flex !important;
+  flex-direction: row !important;
   justify-content: space-between;
   align-items: center;
   gap: 16px;
-  text-align: left;
 }
 
 .question-row label {
   flex: 1;
   margin: 0;
-  text-align: left;
+  text-align: left !important;
   font-weight: 500;
 }
 
