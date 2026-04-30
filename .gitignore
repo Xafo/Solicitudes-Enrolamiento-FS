@@ -1,0 +1,6 @@
+*.pdf
+*.xlsx
+00_fuentes/
+05_pruebas/evidencias/
+.DS_Store
+react-app/.vite/
